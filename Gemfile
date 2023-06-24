@@ -12,6 +12,15 @@ gem "sprockets-rails"
 # Use mysql as the database for Active Record
 gem 'mysql2', '~> 0.5.2'
 
+
+
+# setting automation test when modify some file was configuarted
+group :test do
+  #minitest - reporters
+  gem 'minitest-reporters', '~> 1.6'
+  gem 'guard', '~> 2.18'
+  gem 'guard-minitest', '~> 2.4', '>= 2.4.6'
+end
 # Use the Puma web server [https://github.com/puma/puma]
 gem "puma", "~> 5.0"
 
