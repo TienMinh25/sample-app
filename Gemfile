@@ -5,21 +5,22 @@ ruby "3.2.2"
 
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
 gem "rails", "~> 7.0.5"
-
+gem "bootstrap-sass"
+gem "sassc-rails"
 # The original asset pipeline for Rails [https://github.com/rails/sprockets-rails]
 gem "sprockets-rails"
 
 # Use mysql as the database for Active Record
 gem 'mysql2', '~> 0.5.2'
 
-
-
 # setting automation test when modify some file was configuarted
 group :test do
-  #minitest - reporters
+  # minitest - reporters
+  gem 'minitest'
   gem 'minitest-reporters', '~> 1.6'
   gem 'guard', '~> 2.18'
   gem 'guard-minitest', '~> 2.4', '>= 2.4.6'
+  gem 'rails-controller-testing'
 end
 # Use the Puma web server [https://github.com/puma/puma]
 gem "puma", "~> 5.0"
