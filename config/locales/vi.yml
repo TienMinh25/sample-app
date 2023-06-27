@@ -6,5 +6,7 @@ vi:
     contact: "Liên hệ"
     help: "Tư vấn"
     signup: "Đăng kí ngay"
+  sessions:
+    login: "Đăng nhập"
   english: English
   vietnam: Vietnamese

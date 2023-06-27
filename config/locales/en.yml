@@ -37,5 +37,7 @@ en:
     contact: Contact
     help: Help
     signup: Sign up
+  sessions:
+    login: Login
   english: English
   vietnam: Vietnamese
