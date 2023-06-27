@@ -3,7 +3,7 @@
 This document will be description all about my sample-app. 
 Below is my daily to-do list
 
-#### 23/06/2023:
+#### Chapter 3:
 
 * Create sample-app, below is command line I use
 ```
@@ -43,7 +43,6 @@ MySQL for default db)
         ```
         rails server
         ```
-#### 24/06/2023:
 * Successfully configured automation test
 * Built a static web, used C and V in MVC, and generated controller via command line. Syntax below here
     ```
@@ -53,4 +52,108 @@ MySQL for default db)
         ```
         rails destroy controller <Controller_name> <action_1> <action_2> ...
         ```
-* Done chapter 3 and run successfully.
+* Learn about embedded Ruby, which allows to write code Ruby into file html, html file will have the extension `<ten_file>.html.erb`. Have
+two syntaxes I was learned:
+    ```
+        <%  %>: Execute code inside.
+  
+        <%= %>: Execute code inside and insert it into file.
+    ```
+  
+* Setting root route
+
+### Chapter 4:
+* Learn about built-in helpers. Some method in below:
+    > **link_to**: generate tag <a></a> in html and custom as you like
+
+    > **stylesheet_link_tag**: used to insert .css files  
+
+* Learn `arrays` and `range` (data structure) and learn about blocks.
+* Learn `hashes` and `symbol`
+* Learn about class in Ruby, class inheritance, modify class built-in.
+* Learn about constructor in Ruby (example below):
+    ```
+        class Cat
+            def initialize(params)
+                # Constructor for field in here.
+            end
+        end
+    ```
+  * Note:
+    > **params**: variables want to pass for initialization
+* Everything in Ruby is an object 
+* `p` method is different with `puts` method
+  > **puts** method will return **nil**
+  
+  > **p** method will return the printed object
+
+* Learn about access control in Ruby:
+  > Ruby provides 3 levels of protection for its method:
+    >> 1. **public**: this method can be called from anywhere, can be treated as if there is no access control or restriction.
+    >> 2. **private**: this method can be called from an object of this class or an object that is a child of this class.
+    >> 3. **protected**: this method is only called inside itself class define it.
+  
+  >  In addition, Ruby provides some access to the field of a class:
+  >> 1. **attr_reader**: it allows to read information from a field.
+  >> 2. **attr_writer**: it allows to modify data in a field.
+  >> 3. **attr_accessor**: combination of `attr_writer` and `attr_reader`.
+
+### Chapter 5:
+* Use `bootstrap` framework to built layout
+* Learn about asset pipeline, it's a **powerful feature** that rails provides:
+    > The asset pipeline provides a framework that allows connecting, compressing, or minifying CSS or JS resources. It also us to
+  > write CSS or JS resources. It also allows us to write CSS, JS in a number of other languages
+  > such as CoffeeScript, Sass or ERB. The assets files in the application are automatically linked to
+  > the assets contained in the gem.
+
+    > The Rails asset pipelines uses three standard directories for static assets, each with its own purpose:
+    >> 1. **app/assets**: assets specific to the present application
+    >> 2. **lib/assets**: assets for libraries written by your dev team
+    >> 3. **vendor/assets**: assets from third-party vendors (not present by default)
+    >
+    > Each of these directories has a subdirectory for each of two asset classes--**images** and **Cascading Style Sheets**.
+* Used **image_tag** helper, Rails will automatically find any images in the `app/assets/images` directory using the asset pipeline
+    > <%= image_tag("rails.svg", alt: "Rails logo", width: "200", "https://rubyonrails.org"%>
+    * Example about used `image_tag` method above
+* Use bootstrap and custom CSS (use SASS)
+* **In Ruby, when the final arguments are hashes in a function call, curly braces {} are optional**
+    ```
+    # Curly braces on fianl hash arguments are optional
+    # This:
+    stylesheet_link_tag("application", {"data-turbo-track": "reload"})
+    
+    # is the same as this:
+    stylesheet_link_tag("application", "data-turbo-track": "reload")
+    ```
+* Rails use a facility ***partials*** to divide application layout
+* Use global variable in SCSS file
+
+    `$light-gray: #777`
+* Learn about **nested attribute** in scss and **mixins** and learn about inheritance of other format use **@extend**, example below:
+    ```
+    .field_with_errors {
+         @extend .has-error;
+         .form-control {
+             color: $state-danger-text;
+         }
+    }
+   ```
+* Built and use Rails routes
+* Learn layout link tests, use **assert_select** method:
+    > Some more uses of **assert_select** appear in table below:
+    >
+    | Code                                       |                    Matching HTML |
+    |:-------------------------------------------|---------------------------------:|
+    | assert_select "div"                        |              \<div>foobar\</div> |
+    | assert_select "div", "foobar"              |              \<div>foobar\</div> |
+    | assert_select "div.nav"                    |  \<div class="nav">foobar\</div> |
+    | assert_select "div#profile"                | \<div id="profile">foobar\</div> |
+    | assert_select "div[name=yo]"               |     \<div name = "yo">hey\</div> |
+    | assert_select "a[href=?]", "/" , count: 1  |          \<a href = "/">foo\</a> |
+    | assert_select "a[href=?]", "/", text: "foo" |          \<a href = "/">foo\</a> |
+
+* **Note in Route:**
+ > Example: `get '/contact', to: 'static_pages#contact'`
+ >    
+ >> 
+### Chapter 6:
