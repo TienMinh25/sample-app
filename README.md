@@ -100,6 +100,22 @@ two syntaxes I was learned:
 
 ### Chapter 5:
 * Use `bootstrap` framework to built layout
+* #### Bootstrap and custom CSS
+```rb
+gem "bootstrap-sass"
+```
+```bash
+bundle install
+```
+Create a custom SCSS file
+```bash
+touch app/assets/stylesheets/custom.scss
+```
+Inside the `custom.scss` use `@import` function to include Bootstrap. Then add some custom CSS to the file.
+```scss
+@import "bootstrap-sprockets";
+@import "bootstrap";
+```
 * Learn about asset pipeline, it's a **powerful feature** that rails provides:
     > The asset pipeline provides a framework that allows connecting, compressing, or minifying CSS or JS resources. It also us to
   > write CSS or JS resources. It also allows us to write CSS, JS in a number of other languages
@@ -126,6 +142,19 @@ two syntaxes I was learned:
     stylesheet_link_tag("application", "data-turbo-track": "reload")
     ```
 * Rails use a facility ***partials*** to divide application layout
+* Beside layout, We can split chunks of code using **Partials**.
+
+    In `app/views/layouts/application.html.erb`
+    ```erb
+    <head>
+       ...Some tags
+       <%= render 'layouts/shim' %>
+    </head>
+    <body>
+        <%= render 'layouts/header' %>
+        ...Some tags
+    </body>
+    ```
 * Use global variable in SCSS file
 
     `$light-gray: #777`
@@ -139,6 +168,25 @@ two syntaxes I was learned:
     }
    ```
 * Built and use Rails routes
+  
+  **Define shorter path:**
+    ```rb
+    # Initially
+    get 'static_pages/home'
+    
+    # Now
+    get "/home", to: "static_pages#help"(1)
+    ```
+  (1) **Note:**
+    * `/home` -> `path`
+    * `static_pages` -> `controller`
+    * `#help` -> `action`
+* **Layout Links**
+    ```erb
+    <%= link_to "About", about_path %>
+    ```
+    - `name_path` -> `/name`
+    - `name_url` -> `https://example.com/name`
 * Learn layout link tests, use **assert_select** method:
     > Some more uses of **assert_select** appear in table below:
     >
@@ -152,8 +200,4 @@ two syntaxes I was learned:
     | assert_select "a[href=?]", "/" , count: 1  |          \<a href = "/">foo\</a> |
     | assert_select "a[href=?]", "/", text: "foo" |          \<a href = "/">foo\</a> |
 
-* **Note in Route:**
- > Example: `get '/contact', to: 'static_pages#contact'`
- >    
- >> 
 ### Chapter 6:
