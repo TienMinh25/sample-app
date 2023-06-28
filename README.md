@@ -3,7 +3,7 @@
 This document will be description all about my sample-app. 
 Below is my daily to-do list
 
-#### Chapter 3:
+#### Chapter 3: _Mostly static pages_
 
 * Create sample-app, below is command line I use
 ```
@@ -62,7 +62,7 @@ two syntaxes I was learned:
   
 * Setting root route
 
-### Chapter 4:
+### Chapter 4: _Rails-Flavored Ruby_
 * Learn about built-in helpers. Some method in below:
     > **link_to**: generate tag <a></a> in html and custom as you like
 
@@ -98,7 +98,7 @@ two syntaxes I was learned:
   >> 2. **attr_writer**: it allows to modify data in a field.
   >> 3. **attr_accessor**: combination of `attr_writer` and `attr_reader`.
 
-### Chapter 5:
+### Chapter 5: *Filling in the Layout*
 * Use `bootstrap` framework to built layout
 * #### Bootstrap and custom CSS
 ```rb
@@ -200,4 +200,51 @@ Inside the `custom.scss` use `@import` function to include Bootstrap. Then add s
     | assert_select "a[href=?]", "/" , count: 1  |          \<a href = "/">foo\</a> |
     | assert_select "a[href=?]", "/", text: "foo" |          \<a href = "/">foo\</a> |
 
-### Chapter 6:
+### Chapter 6: _Modeling Users_
+### Chapter 7: _Sign Up_
+### Chapter 8: _Basic Login_
+### Chapter 9: _Advanced Login_
+### Chapter 10: _Updating, Showing and Deleting User_
+* Completed the REST actions for the Users resource(**_edit, update, index, destroy_** actions)
+* Refer to the following table below:
+  
+  **Restful Route in Rails** (This is the standard)
+
+  | Method    | Action   | URL             | Route(Controller#Action) |                                                   Description |
+  |:----------|----------|-----------------|--------------------------|--------------------------------------------------------------:|
+  | GET       | index    | /posts          | posts#index              |                               Show list of articles(bai viet) |
+  | GET       | new      | /posts/new      | posts#new                |   Returns an HTML page containing a form to create an article |
+  | GET       | show     | /posts/:id      | posts#show               |                                Display a post with a given id |
+  | GET       | edit     | /posts/:id/edit | posts#edit               | Returns the HTML page containing the form to edit the article |
+  | POST      | create   | /posts          | posts#create             |                                             Create a new post |
+  | PATCH/PUT | update   | /posts/:id      | posts#update             |                                 Update a post with a given id |
+  | DELETE    | delete   | /posts/:id      | posts#destroy            |                                 Delete a post with a given id |
+  
+* Some common status code:
+  > **200 OK** - Trả về thành công cho những phương thức GET, PUT, PATCH hoặc DELETE.
+  > 
+  > **201 Created** - Trả về khi một Resource vừa được tạo thành công.
+  > 
+  > **204 No Content** - Trả về khi Resource xóa thành công.
+  >   
+  > **304 Not Modified** - Client có thể sử dụng dữ liệu từ cache (hỗ trợ server giảm tải xử lí request).
+  > 
+  > **400 Bad Request** - Request không hợp lệ.
+  > 
+  > **401 Unauthorized** - Request cần có sự authentication.
+  > 
+  > **403 Forbidden** - Server hiểu request nhưng bị từ chối không cho phép.
+  > 
+  > **404 Not Found** - Không tìm thấy resource từ URI.
+  > 
+  > **405 Method Not Allowed** - Phương thức không cho phép với user hiện tại.
+  > 
+  > **410 Gone - Resource** - không còn tồn tại, version cũ đã không còn hỗ trợ.
+  > 
+  > **415 Unsupported Media Type.**
+  > 
+  > **422 Unprocessable Entity** - Dữ liệu không được kiểm chứng.
+  > 
+  > **429 Too Many Requests** - Request bị từ chối do bị giới hạn. 
+
+
