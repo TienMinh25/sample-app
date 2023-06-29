@@ -1,11 +1,10 @@
-require "pagy"
 class UsersController < ApplicationController
-  before_action(:logged_in_user, only: [:edit, :update, :index])
+  before_action(:logged_in_user, only: [:edit, :update, :index, :destroy])
   before_action(:correct_user, only:[:edit, :update])
-
+  before_action(:admin_user, only:[:destroy])
   # show all users
   def index
-    @user = pagy(User.all(), items: 15)
+    @pagy, @users = pagy(User.all(), items: 15)
   end
 
   def new
@@ -64,5 +63,17 @@ class UsersController < ApplicationController
     if !current_user?(@user) then
       redirect_to(root_url, status: :see_other)
     end
+  end
+
+  # Delete user
+  def destroy
+    User.find_by(id: params[:id]).destroy()
+    flash[:success] = "User deleted"
+    redirect_to(users_path, status: :see_other)
+  end
+
+  # Confirms an admin user
+  def admin_user
+    redirect_to(root_url, status: :see_other) unless current_user.admin?
   end
 end

@@ -6,17 +6,17 @@ Below is my daily to-do list
 #### Chapter 3: _Mostly static pages_
 
 * Create sample-app, below is command line I use
-```
+```ruby19regexp
 rails _7.0.5_ new sample-app 
 ```
 * Config file *'Gemfile'* and file *'config/database.yml'* to connect database (in app I use 
 MySQL for default db)
   1. Trong file *'Gemfile'*, write the code to the file as follows: (in here i use mysql2 version 0.5.2)
-        ```
+        ```genericsql
         gem 'mysql2', '~> 0.5.2'
         ```
   2. Trong file *'config/database.yml'* (in here you can modify username and password in db with your account)
-        ```
+        ```ruby19regexp
         default: &default
         adapter: mysql2
         encoding: utf8mb4
@@ -32,29 +32,29 @@ MySQL for default db)
 * I tried to connect to database and it was succesfully. Try it by below code
   1. The command line code below is used to set up tables in the database. When you run the migration command,
   it will search in the **db/migrate** folder and execute them by starting from the oldest file.
-        ```
+        ```bash
         rails db:migrate
         ```
   2. The command line code below is used to test
-        ```
+        ```bash
         rails test
         ```
   3. The command line code below is used to run server use rails
-        ```
+        ```bash
         rails server
         ```
 * Successfully configured automation test
 * Built a static web, used C and V in MVC, and generated controller via command line. Syntax below here
-    ```
+    ```bash
     rails generate controller <Controller_name> <action_1> <action_2> ...
     ```
     * Besides, even though you are very careful but still wrong in the above syntax (like naming, ..) you can delete it or cancel it with the following command
-        ```
+        ```bash
         rails destroy controller <Controller_name> <action_1> <action_2> ...
         ```
 * Learn about embedded Ruby, which allows to write code Ruby into file html, html file will have the extension `<ten_file>.html.erb`. Have
 two syntaxes I was learned:
-    ```
+    ```ruby19regexp
         <%  %>: Execute code inside.
   
         <%= %>: Execute code inside and insert it into file.
@@ -72,7 +72,7 @@ two syntaxes I was learned:
 * Learn `hashes` and `symbol`
 * Learn about class in Ruby, class inheritance, modify class built-in.
 * Learn about constructor in Ruby (example below):
-    ```
+    ```ruby
         class Cat
             def initialize(params)
                 # Constructor for field in here.
@@ -80,23 +80,23 @@ two syntaxes I was learned:
         end
     ```
   * Note:
-    > **params**: variables want to pass for initialization
+    > **`params`**: variables want to pass for initialization
 * Everything in Ruby is an object 
 * `p` method is different with `puts` method
-  > **puts** method will return **nil**
+  > **`puts`** method will return **nil**
   
-  > **p** method will return the printed object
+  > **`p`** method will return the printed object
 
 * Learn about access control in Ruby:
   > Ruby provides 3 levels of protection for its method:
-    >> 1. **public**: this method can be called from anywhere, can be treated as if there is no access control or restriction.
-    >> 2. **private**: this method can be called from an object of this class or an object that is a child of this class.
-    >> 3. **protected**: this method is only called inside itself class define it.
+    >> 1. **`public`**: this method can be called from anywhere, can be treated as if there is no access control or restriction.
+    >> 2. **`private`**: this method can be called from an object of this class or an object that is a child of this class.
+    >> 3. **`protected`**: this method is only called inside itself class define it.
   
   >  In addition, Ruby provides some access to the field of a class:
-  >> 1. **attr_reader**: it allows to read information from a field.
-  >> 2. **attr_writer**: it allows to modify data in a field.
-  >> 3. **attr_accessor**: combination of `attr_writer` and `attr_reader`.
+  >> 1. **`attr_reader`**: it allows to read information from a field.
+  >> 2. **`attr_writer`**: it allows to modify data in a field.
+  >> 3. **`attr_accessor`**: combination of `attr_writer` and `attr_reader`.
 
 ### Chapter 5: *Filling in the Layout*
 * Use `bootstrap` framework to built layout
@@ -117,15 +117,15 @@ Inside the `custom.scss` use `@import` function to include Bootstrap. Then add s
 @import "bootstrap";
 ```
 * Learn about asset pipeline, it's a **powerful feature** that rails provides:
-    > The asset pipeline provides a framework that allows connecting, compressing, or minifying CSS or JS resources. It also us to
+    > The `asset pipeline` provides a framework that allows connecting, compressing, or minifying CSS or JS resources. It also us to
   > write CSS or JS resources. It also allows us to write CSS, JS in a number of other languages
   > such as CoffeeScript, Sass or ERB. The assets files in the application are automatically linked to
   > the assets contained in the gem.
 
-    > The Rails asset pipelines uses three standard directories for static assets, each with its own purpose:
-    >> 1. **app/assets**: assets specific to the present application
-    >> 2. **lib/assets**: assets for libraries written by your dev team
-    >> 3. **vendor/assets**: assets from third-party vendors (not present by default)
+    > The Rails `asset pipelines` uses three standard directories for static assets, each with its own purpose:
+    >> 1. **`app/assets`**: assets specific to the present application
+    >> 2. **`lib/assets`**: assets for libraries written by your dev team
+    >> 3. **`vendor/assets`**: assets from third-party vendors (not present by default)
     >
     > Each of these directories has a subdirectory for each of two asset classes--**images** and **Cascading Style Sheets**.
 * Used **image_tag** helper, Rails will automatically find any images in the `app/assets/images` directory using the asset pipeline
@@ -133,7 +133,7 @@ Inside the `custom.scss` use `@import` function to include Bootstrap. Then add s
     * Example about used `image_tag` method above
 * Use bootstrap and custom CSS (use SASS)
 * **In Ruby, when the final arguments are hashes in a function call, curly braces {} are optional**
-    ```
+    ``` erbruby
     # Curly braces on fianl hash arguments are optional
     # This:
     stylesheet_link_tag("application", {"data-turbo-track": "reload"})
@@ -145,7 +145,7 @@ Inside the `custom.scss` use `@import` function to include Bootstrap. Then add s
 * Beside layout, We can split chunks of code using **Partials**.
 
     In `app/views/layouts/application.html.erb`
-    ```erb
+    ```rhtml
     <head>
        ...Some tags
        <%= render 'layouts/shim' %>
@@ -159,7 +159,7 @@ Inside the `custom.scss` use `@import` function to include Bootstrap. Then add s
 
     `$light-gray: #777`
 * Learn about **nested attribute** in scss and **mixins** and learn about inheritance of other format use **@extend**, example below:
-    ```
+    ``` scss
     .field_with_errors {
          @extend .has-error;
          .form-control {
@@ -182,7 +182,7 @@ Inside the `custom.scss` use `@import` function to include Bootstrap. Then add s
     * `static_pages` -> `controller`
     * `#help` -> `action`
 * **Layout Links**
-    ```erb
+    ```erbruby
     <%= link_to "About", about_path %>
     ```
     - `name_path` -> `/name`
@@ -194,11 +194,11 @@ Inside the `custom.scss` use `@import` function to include Bootstrap. Then add s
       > Cũng có thể dùng chuyển đổi link trong `link_to` method
 
       **Example:**
-      ```
+      ```erbruby
         <%= link_to "Improve Your Ruby Skills", book_path(@book) %>
       ```
       is the same: 
-      ```
+      ```erbruby
         <%= link_to "Improve Your Ruby Skills", @book %>
       ```
       
@@ -236,35 +236,35 @@ Inside the `custom.scss` use `@import` function to include Bootstrap. Then add s
   | DELETE    | delete   | /posts/:id      | posts#destroy            |                                 Delete a post with a given id |
   
 * Some common status code:
-  > **200 OK** - Trả về thành công cho những phương thức GET, PUT, PATCH hoặc DELETE.
+  > **`200 OK`** - Trả về thành công cho những phương thức GET, PUT, PATCH hoặc DELETE.
   > 
-  > **201 Created** - Trả về khi một Resource vừa được tạo thành công.
+  > **`201 Created`** - Trả về khi một Resource vừa được tạo thành công.
   > 
-  > **204 No Content** - Trả về khi Resource xóa thành công.
+  > **`204 No Content`** - Trả về khi Resource xóa thành công.
   >   
-  > **304 Not Modified** - Client có thể sử dụng dữ liệu từ cache (hỗ trợ server giảm tải xử lí request).
+  > **`304 Not Modified`** - Client có thể sử dụng dữ liệu từ cache (hỗ trợ server giảm tải xử lí request).
   > 
-  > **400 Bad Request** - Request không hợp lệ.
+  > **`400 Bad Request`** - Request không hợp lệ.
   > 
-  > **401 Unauthorized** - Request cần có sự authentication.
+  > **`401 Unauthorized`** - Request cần có sự authentication.
   > 
-  > **403 Forbidden** - Server hiểu request nhưng bị từ chối không cho phép.
+  > **`403 Forbidden`** - Server hiểu request nhưng bị từ chối không cho phép.
   > 
-  > **404 Not Found** - Không tìm thấy resource từ URI.
+  > **`404 Not Found`** - Không tìm thấy resource từ URI.
   > 
-  > **405 Method Not Allowed** - Phương thức không cho phép với user hiện tại.
+  > **`405 Method Not Allowed`** - Phương thức không cho phép với user hiện tại.
   > 
-  > **410 Gone - Resource** - không còn tồn tại, version cũ đã không còn hỗ trợ.
+  > **`410 Gone - Resource`** - không còn tồn tại, version cũ đã không còn hỗ trợ.
   > 
-  > **415 Unsupported Media Type.**
+  > **`415 Unsupported Media Type`**
   > 
-  > **422 Unprocessable Entity** - Dữ liệu không được kiểm chứng.
+  > **`422 Unprocessable Entity`** - Dữ liệu không được kiểm chứng.
   > 
-  > **429 Too Many Requests** - Request bị từ chối do bị giới hạn. 
+  > **`429 Too Many Requests`** - Request bị từ chối do bị giới hạn. 
 
 * Passing local variables in `render` method:
 
-  >   Rails hỗ trợ render có thể truyền các biến local vào partial để chúng thêm mạnh mẽ và linh hoạt. Chúng ta có thể dùng object để khai báo 1 variable vào partial, và as để customize tên biến truyền vào. 
+  >   Rails hỗ trợ `render` có thể truyền các `biến local` vào `partial` để chúng thêm mạnh mẽ và linh hoạt. Chúng ta có thể dùng `object` để khai báo 1 `variable` vào `partial`, và as để customize tên biến truyền vào. 
   > 
   >   Ví dụ đơn giản nhất là trong trường hợp tạo mới và chỉnh sửa profile user: ở `views/users/new.html.erb` :
 
@@ -276,14 +276,14 @@ Inside the `custom.scss` use `@import` function to include Bootstrap. Then add s
 
   ```
   - Ở `views/user/edit.html.erb`:
-  ```
+  ``` rhtml
       #edit.html.erb
 
       <h1>Editing Profile</h1>
       <%= render partial: "form", object: @user, as: "user" %>
   ```
   và ở `partial _form.html.erb` chúng ta có thể dùng `user` thay cho `@user`:
-  ```
+  ``` rhtml
     <%= form_for user do |f| %>
       <p>
          <b>user name</b><br>
@@ -294,18 +294,18 @@ Inside the `custom.scss` use `@import` function to include Bootstrap. Then add s
       </p>
     <% end %>
   ```
-  option as rất thú vị trong trường hợp render partial ở nhiều chỗ và mỗi chỗ lại có một tên object truyền vào khác nhau. Đấy là trường hợp truyền 1 biến vào partial, còn trong trg hợp biến truyền vào là 1 tập hợp, thì chúng ta sẽ dùng collection để khai báo.
-  ```
+  option as rất thú vị trong trường hợp `render` `partial` ở nhiều chỗ và mỗi chỗ lại có một tên object truyền vào khác nhau. Đấy là trường hợp truyền `1 biến` vào `partial`, còn trong trg hợp biến truyền vào là 1 `tập hợp`, thì chúng ta sẽ dùng `collection` để khai báo.
+  ``` erbruby
      <tbody>
          <%= render partial: "user",  collection: @users, as: "user" %>
      </tbody>
   ```
   Về cú pháp không có vấn đề gì, tuy nhiên có vẻ như hơi lặp nhiều từ "user", rails có hỗ trợ cú pháp đơn giản hơn cho trường hợp này:
-  ```
+  ``` erbruby
     <%= render(model: @users) %>
   ```
-  Đơn giản đến mức tối đa, nhưng mà làm sao để Rails hiểu được chúng ta muốn render ra partial _user.html.erb với 1 loạt biến @users và có tên biến chung là user? Thực ra thì trong Rails tất cả partial đều mặc định có 1 biến local variable với tên trùng với tên của partial, tức là partial _user.html.erb sẽ luôn có sẵn local variable là user. Và trong trường hợp trên, Rails sẽ xác định ra partial cần render thông qua việc tìm từng tên của model trong tập hợp các biến đó. Trong trường hợp collection trả về empty, render sẽ trả về giá trị nil, cho nên cũng khá đơn giản để đưa ra các nội dung thay thế:
-  ```
+  Đơn giản đến mức tối đa, nhưng mà làm sao để Rails `hiểu được` chúng ta muốn `render` ra `partial` `_user.html.erb` với 1 loạt biến `@users` và có tên biến chung là `user`? Thực ra thì trong Rails tất cả partial đều mặc định có 1 biến local variable với tên trùng với tên của `partial`, tức là `partial` `_user.html.erb` sẽ luôn có sẵn `local variable` là `user`. Và trong trường hợp trên, Rails sẽ xác định ra `partial` cần `render` thông qua việc tìm từng tên của `model` trong tập hợp các biến đó. Trong trường hợp `collection` trả về `empty`, `render` sẽ trả về giá trị `nil`, cho nên cũng khá đơn giản để đưa ra các nội dung thay thế:
+  ``` erbruby
      #(Search) index.html.erb
 
      <h1>Search Result</h1>
@@ -317,7 +317,7 @@ Inside the `custom.scss` use `@import` function to include Bootstrap. Then add s
  of our site, while **authorization** lets us **control** what they can do.
   - **Requiring logged-in users**:
     - Used `callback` `before_action` provided by **Active Support**
-      ```
+      ``` ruby
       class UsersController < ApllicationController
         before_action :logged_in_user, {only: [:edit, :update]}
         ..
@@ -342,7 +342,7 @@ Inside the `custom.scss` use `@import` function to include Bootstrap. Then add s
     
   > Code for seeding the database with sample users in `db/seeds.rb`
   > 
-  ```angular2html
+  ```ruby
      # Create a main sample user.
   
      User.create!(name: "Example User", email: "example@railstutorial.org", password: "foobar", password_confirmation: "foobar")
@@ -394,3 +394,6 @@ Inside the `custom.scss` use `@import` function to include Bootstrap. Then add s
   >
   > 2. But, the view in code above doesn't work yet, though, because currently `@user` contains the results of `User.all`,
   > whereas `will_paginate` requires that we paginate the results explicitly using the `paginate` method.
+
+* Sử dụng `pagy` gem thay thế cho `will_paginate` gem -> Dùng để hiển thị số lượng người dùng nhất định, giống như hiển thị bài viết nhất định 
+  chứ không cần hiển thị cả.

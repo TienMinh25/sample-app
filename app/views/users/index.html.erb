@@ -1,9 +1,10 @@
 <% provide(:title, "All users") %>
 <h1>All users</h1>
-<%== pagy_nav(@user)%>
+<%== pagy_nav(@pagy)%>
 <ul class = "users">
-  <% @user.each do |user| %>
+  <% @users.each do |user| %>
     <%= render(user) %>
   <% end %>
 </ul>
+<%== pagy_nav(@pagy) %>
 
