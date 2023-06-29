@@ -1,7 +1,9 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>SampleApp</title>
+    <%= link_to t("english"), locale: "en" %>
+    <%= link_to t("vietnam"), locale: "vi" %>
+    <title><%= yield(:title) %> | <%= t "static_pages.sub_title" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>

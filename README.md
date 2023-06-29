@@ -43,3 +43,14 @@ MySQL for default db)
         ```
         rails server
         ```
+#### 24/06/2023:
+* Successfully configured automation test
+* Built a static web, used C and V in MVC, and generated controller via command line. Syntax below here
+    ```
+    rails generate controller <Controller_name> <action_1> <action_2> ...
+    ```
+    * Besides, even though you are very careful but still wrong in the above syntax (like naming, ..) you can delete it or cancel it with the following command
+        ```
+        rails destroy controller <Controller_name> <action_1> <action_2> ...
+        ```
+* Done chapter 3 and run successfully.

@@ -1,0 +1,9 @@
+vi:
+  static_pages:
+    sub_title:  Ứng dựng hướng dẫn mẫu Ruby on
+    home: Trang
+    about: Về chúng
+    contact: Liên hệ
+    help: Tư vấn
+  english: English
+  vietnam: Vietnamese
