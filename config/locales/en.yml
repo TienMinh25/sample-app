@@ -30,4 +30,12 @@
 # available at https://guides.rubyonrails.org/i18n.html.
 
 en:
-  hello: "Hello world"
+  static_pages:
+    sub_title: Ruby on Rails Tutorial Sample App
+    home: Home
+    about: About
+    contact: Contact
+    help: Help
+    signup: Sign up
+  english: English
+  vietnam: Vietnamese
