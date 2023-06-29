@@ -13,15 +13,6 @@ gem "sprockets-rails"
 # Use mysql as the database for Active Record
 gem 'mysql2', '~> 0.5.2'
 
-# setting automation test when modify some file was configuarted
-group :test do
-  # minitest - reporters
-  gem 'minitest'
-  gem 'minitest-reporters', '~> 1.6'
-  gem 'guard', '~> 2.18'
-  gem 'guard-minitest', '~> 2.4', '>= 2.4.6'
-  gem 'rails-controller-testing'
-end
 # Use the Puma web server [https://github.com/puma/puma]
 gem "puma", "~> 5.0"
 
@@ -44,7 +35,7 @@ gem "jbuilder"
 # gem "kredis"
 
 # Use Active Model has_secure_password [https://guides.rubyonrails.org/active_model_basics.html#securepassword]
-# gem "bcrypt", "~> 3.1.7"
+gem "bcrypt", "~> 3.1.7"
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
 gem "tzinfo-data", platforms: %i[ mingw mswin x64_mingw jruby ]
@@ -63,6 +54,8 @@ group :development, :test do
   gem "debug", platforms: %i[ mri mingw x64_mingw ]
 end
 
+gem "rails-i18n"
+
 group :development do
   # Use console on exceptions pages [https://github.com/rails/web-console]
   gem "web-console"
@@ -74,9 +67,3 @@ group :development do
   # gem "spring"
 end
 
-group :test do
-  # Use system testing [https://guides.rubyonrails.org/testing.html#system-testing]
-  gem "capybara"
-  gem "selenium-webdriver"
-  gem "webdrivers"
-end

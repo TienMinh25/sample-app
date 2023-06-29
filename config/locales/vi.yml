@@ -1,0 +1,10 @@
+vi:
+  static_pages:
+    sub_title: "Ứng dụng hướng dẫn mẫu Ruby on Rails"
+    home: "Trang chủ"
+    about: "Về chúng tôi"
+    contact: "Liên hệ"
+    help: "Tư vấn"
+    signup: "Đăng kí ngay"
+  english: English
+  vietnam: Vietnamese
