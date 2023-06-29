@@ -397,3 +397,9 @@ Inside the `custom.scss` use `@import` function to include Bootstrap. Then add s
 
 * Sử dụng `pagy` gem thay thế cho `will_paginate` gem -> Dùng để hiển thị số lượng người dùng nhất định, giống như hiển thị bài viết nhất định 
   chứ không cần hiển thị cả.
+* **`NOTE`**:
+  > Running `render` `@users` `automatically calls` the `_user.html.erb` `partial`
+  on each user in the `collection`.
+  >
+  > A `boolean attribute` called `admin` on the `User model` `automatically
+  creates` an `admin? boolean method` on user objects.
