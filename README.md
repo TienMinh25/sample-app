@@ -187,6 +187,21 @@ Inside the `custom.scss` use `@import` function to include Bootstrap. Then add s
     ```
     - `name_path` -> `/name`
     - `name_url` -> `https://example.com/name`
+    - **Note**: 
+      > Bởi vì link_to sẽ tự hiểu khi truyền 1 object vào about_path thì Rails sẽ hiểu và tự chuyển đổi
+      object thành đường dẫn muốn liên kết đến.
+      
+      > Cũng có thể dùng chuyển đổi link trong `link_to` method
+
+      **Example:**
+      ```
+        <%= link_to "Improve Your Ruby Skills", book_path(@book) %>
+      ```
+      is the same: 
+      ```
+        <%= link_to "Improve Your Ruby Skills", @book %>
+      ```
+      
 * Learn layout link tests, use **assert_select** method:
     > Some more uses of **assert_select** appear in table below:
     >
@@ -247,4 +262,135 @@ Inside the `custom.scss` use `@import` function to include Bootstrap. Then add s
   > 
   > **429 Too Many Requests** - Request bị từ chối do bị giới hạn. 
 
+* Passing local variables in `render` method:
 
+  >   Rails hỗ trợ render có thể truyền các biến local vào partial để chúng thêm mạnh mẽ và linh hoạt. Chúng ta có thể dùng object để khai báo 1 variable vào partial, và as để customize tên biến truyền vào. 
+  > 
+  >   Ví dụ đơn giản nhất là trong trường hợp tạo mới và chỉnh sửa profile user: ở `views/users/new.html.erb` :
+
+    ```
+      #new.html.erb
+
+    <h1>Sign Up</h1>
+    <%= render partial: "form", object: @user, as: "user" %>
+
+  ```
+  - Ở `views/user/edit.html.erb`:
+  ```
+      #edit.html.erb
+
+      <h1>Editing Profile</h1>
+      <%= render partial: "form", object: @user, as: "user" %>
+  ```
+  và ở `partial _form.html.erb` chúng ta có thể dùng `user` thay cho `@user`:
+  ```
+    <%= form_for user do |f| %>
+      <p>
+         <b>user name</b><br>
+         <%= f.text_field :name %>
+      </p>
+      <p>
+         <%= f.submit %>
+      </p>
+    <% end %>
+  ```
+  option as rất thú vị trong trường hợp render partial ở nhiều chỗ và mỗi chỗ lại có một tên object truyền vào khác nhau. Đấy là trường hợp truyền 1 biến vào partial, còn trong trg hợp biến truyền vào là 1 tập hợp, thì chúng ta sẽ dùng collection để khai báo.
+  ```
+     <tbody>
+         <%= render partial: "user",  collection: @users, as: "user" %>
+     </tbody>
+  ```
+  Về cú pháp không có vấn đề gì, tuy nhiên có vẻ như hơi lặp nhiều từ "user", rails có hỗ trợ cú pháp đơn giản hơn cho trường hợp này:
+  ```
+    <%= render(model: @users) %>
+  ```
+  Đơn giản đến mức tối đa, nhưng mà làm sao để Rails hiểu được chúng ta muốn render ra partial _user.html.erb với 1 loạt biến @users và có tên biến chung là user? Thực ra thì trong Rails tất cả partial đều mặc định có 1 biến local variable với tên trùng với tên của partial, tức là partial _user.html.erb sẽ luôn có sẵn local variable là user. Và trong trường hợp trên, Rails sẽ xác định ra partial cần render thông qua việc tìm từng tên của model trong tập hợp các biến đó. Trong trường hợp collection trả về empty, render sẽ trả về giá trị nil, cho nên cũng khá đơn giản để đưa ra các nội dung thay thế:
+  ```
+     #(Search) index.html.erb
+
+     <h1>Search Result</h1>
+     <%= render(@users) || "Khong co ket qua phu hop!" %>
+   ```
+  Ngoài ra kỹ thuật Rails `render` nói chung và `render view` khác đa dụng và hữu dụng, còn nhiều kỹ thuật render view khác.
+* **Authorization**:
+  > In the **context** of web applications, **authentication** allows us to **identify users**
+ of our site, while **authorization** lets us **control** what they can do.
+  - **Requiring logged-in users**:
+    - Used `callback` `before_action` provided by **Active Support**
+      ```
+      class UsersController < ApllicationController
+        before_action :logged_in_user, {only: [:edit, :update]}
+        ..
+        ..
+        ..
+        ..
+      
+        # Confirms a logged_in user
+        def logged_in_user
+          unless logged_in?
+            flash[:danger] = "Please log in."
+            redirect_to(login_url, status: :see_other)
+          end
+        end
+      end
+      ```
+* **Sample Users**
+  * Used `Faker` gem to the `Gemfile`, which will allow us to make sample users with semi-realistic names and addresses
+  > Adding the `Faker` gem to the Gemfile:
+  > 
+  >    `gem "faker"`
+    
+  > Code for seeding the database with sample users in `db/seeds.rb`
+  > 
+  ```angular2html
+     # Create a main sample user.
+  
+     User.create!(name: "Example User", email: "example@railstutorial.org", password: "foobar", password_confirmation: "foobar")
+     # Generate a bunch of additional users.
+     99.times do |n|
+         name = Faker::Name.name
+         email = "example-#{n+1}@railstutorial.org"
+         password = "password"
+         User.create!(name: name, email: email, password: password, password_confirmation: password)
+     end
+  ```
+* Use two commends to reset and constructor sample data:
+  > rails db:migrate:reset
+  > 
+  > rails db:seed 
+  > 
+* **Pagination:** (trang 676)
+    - Problem: My website has _**too many**_ users. And they all appear on the same page.
+    
+      > **_=> Solution for it:_**
+      > 
+      > The solution is to _**paginate**_ the users, so that (for example) only 30 show up on a page at any one time.
+  
+    - Config `Gemfile`:
+      > gem "will_paginate"
+      > 
+      > gem "bootstrap-will_paginate" 
+      > 
+    - Then run `bundle install` in command line.
+    - In `app/views/users/index.html.erb`:
+        ```
+        <% provide(:title, 'All users') %>
+        <h1>All users</h1>
+        <%= will_paginate %>
+            <ul class="users">
+                <% @users.each do |user| %>
+                  <li>
+                     <%= gravatar_for user, size: 50 %>
+                     <%= link_to user.name, user %>
+                  </li>
+                <% end %>
+            </ul>
+        <%= will_paginate %>
+        ```
+    > 1. The `will_paginate` method is a little magical; inside a users view, it
+  automatically looks for an `@users` object, and then displays `pagination links`
+  to access other pages.
+  > 
+  >
+  > 2. But, the view in code above doesn't work yet, though, because currently `@user` contains the results of `User.all`,
+  > whereas `will_paginate` requires that we paginate the results explicitly using the `paginate` method.

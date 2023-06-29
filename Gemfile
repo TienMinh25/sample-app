@@ -67,3 +67,7 @@ group :development do
   # gem "spring"
 end
 
+# use to fake user
+gem "faker"
+
+gem 'pagy', '~> 6.0' # omit patch digit
