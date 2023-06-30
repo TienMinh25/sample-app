@@ -4,7 +4,7 @@ class UsersController < ApplicationController
   end
 
   def show
-    @user = User.find(params[:id])
+    @user = User.find_by(params[:id])
   end
 
   def create
@@ -17,7 +17,7 @@ class UsersController < ApplicationController
       flash[:success] = "Welcome to the Sample App!"
       redirect_to user_url(@user)
     else
-      render('new', {status: :unprocessable_entity})
+      render(:new, {status: :unprocessable_entity})
     end
   end
 
