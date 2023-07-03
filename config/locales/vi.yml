@@ -1,5 +1,13 @@
 vi:
   static_pages:
+    sub_title: "Ứng dụng hướng dẫn mẫu Ruby on Rails"
+    home: "Trang chủ"
+    about: "Về chúng tôi"
+    contact: "Liên hệ"
+    help: "Tư vấn"
+    signup: "Đăng kí ngay"
+  sessions:
+    login: "Đăng nhập"
     sub_title:  Ứng dựng hướng dẫn mẫu Ruby on
     home: Trang
     about: Về chúng
