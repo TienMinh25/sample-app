@@ -32,7 +32,6 @@ module SessionsHelper
   
   # return true if the given user is the current user.
   def current_user?(user)
-    Rails.logger.info "Current_user? returns " + user.id.to_s
     user && user == current_user()
   end
 

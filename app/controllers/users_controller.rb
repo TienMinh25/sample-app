@@ -1,8 +1,9 @@
 class UsersController < ApplicationController
+  before_action(:find_user_by_id, only: [:show, :edit, :correct_user, :update])
   before_action(:logged_in_user, only: [:edit, :update, :index, :destroy])
   before_action(:correct_user, only:[:edit, :update])
   before_action(:admin_user, only:[:destroy])
-
+  
   # show all users
   def index
     @pagy, @users = pagy(User.all(), items: 15)
@@ -13,7 +14,7 @@ class UsersController < ApplicationController
   end
 
   def show
-    @user = User.find_by(params[:id])
+    return @user
   end
 
   def create
@@ -32,11 +33,9 @@ class UsersController < ApplicationController
 
   def edit
     @user = User.find_by(params[:id])
-    Rails.logger.info @user.id
   end
 
   def update
-    @user = User.find_by(params[:id])
     if @user.update(user_params())
       # Handle a successful update.
       flash[:success] = "Profile updated"
@@ -48,6 +47,7 @@ class UsersController < ApplicationController
 
   # Delete user
   def destroy
+    # Tim kiem nguoi dung muon xoa (chi admin moi co quyen)
     User.find_by(id: params[:id]).destroy()
     flash[:success] = "User deleted"
     redirect_to(users_path, status: :see_other)
@@ -69,7 +69,6 @@ class UsersController < ApplicationController
 
   # Confirms the correct user
   def correct_user
-    @user = User.find_by_id params[:id]
     if !current_user?(@user) then
       redirect_to(root_url, status: :see_other)
     end
@@ -78,5 +77,10 @@ class UsersController < ApplicationController
   # Confirms an admin user
   def admin_user
     redirect_to(root_url, status: :see_other) unless current_user.admin?
+  end
+
+  # Find user by id
+  def find_user_by_id
+    @user = User.find_by(id: params[:id])
   end
 end
