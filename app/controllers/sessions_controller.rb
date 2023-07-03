@@ -6,6 +6,7 @@ class SessionsController < ApplicationController
     if user && user.authenticate(params[:session][:password])
       # Log the user in and redirect to the user's show page.
       reset_session()
+      params[:session][:remember_me] == '1' ? remember(user) : forget(user)
       log_in(user)
       redirect_to(user_url(user))
     else
@@ -17,7 +18,7 @@ class SessionsController < ApplicationController
   end
 
   def destroy
-    log_out()
+    log_out() if logged_in?()
     # status code see_other <=> 303 HTTP -> lay tai nguyen cua URI khac
     # redirect_to dung de chuyen huong
     redirect_to(root_path, status: :see_other)
