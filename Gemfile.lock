@@ -66,9 +66,15 @@ GEM
       i18n (>= 1.6, < 2)
       minitest (>= 5.1)
       tzinfo (~> 2.0)
+    autoprefixer-rails (10.4.13.0)
+      execjs (~> 2)
+    bcrypt (3.1.19)
     bindex (0.8.1)
     bootsnap (1.16.0)
       msgpack (~> 1.2)
+    bootstrap-sass (3.4.1)
+      autoprefixer-rails (>= 5.2.1)
+      sassc (>= 2.0.0)
     builder (3.2.4)
     concurrent-ruby (1.2.2)
     crass (1.0.6)
@@ -77,6 +83,10 @@ GEM
       irb (>= 1.5.0)
       reline (>= 0.3.1)
     erubi (1.12.0)
+    execjs (2.8.1)
+    faker (3.2.0)
+      i18n (>= 1.8.11, < 2)
+    ffi (1.15.5)
     globalid (1.1.0)
       activesupport (>= 5.0)
     i18n (1.14.1)
@@ -118,6 +128,7 @@ GEM
       racc (~> 1.4)
     nokogiri (1.15.2-x86_64-linux)
       racc (~> 1.4)
+    pagy (6.0.4)
     puma (5.6.6)
       nio4r (~> 2.0)
     racc (1.7.1)
@@ -144,6 +155,9 @@ GEM
     rails-html-sanitizer (1.6.0)
       loofah (~> 2.21)
       nokogiri (~> 1.14)
+    rails-i18n (7.0.7)
+      i18n (>= 0.7, < 2)
+      railties (>= 6.0.0, < 8)
     railties (7.0.5)
       actionpack (= 7.0.5)
       activesupport (= 7.0.5)
@@ -154,6 +168,14 @@ GEM
     rake (13.0.6)
     reline (0.3.5)
       io-console (~> 0.5)
+    sassc (2.4.0)
+      ffi (~> 1.9)
+    sassc-rails (2.1.2)
+      railties (>= 4.0.0)
+      sassc (>= 2.0)
+      sprockets (> 3.0)
+      sprockets-rails
+      tilt
     sprockets (4.2.0)
       concurrent-ruby (~> 1.0)
       rack (>= 2.2.4, < 4)
@@ -164,6 +186,7 @@ GEM
     stimulus-rails (1.2.1)
       railties (>= 6.0.0)
     thor (1.2.2)
+    tilt (2.2.0)
     timeout (0.4.0)
     turbo-rails (1.4.0)
       actionpack (>= 6.0.0)
@@ -186,13 +209,19 @@ PLATFORMS
   x86_64-linux
 
 DEPENDENCIES
+  bcrypt (~> 3.1.7)
   bootsnap
+  bootstrap-sass
   debug
+  faker
   importmap-rails
   jbuilder
   mysql2 (~> 0.5.2)
+  pagy (~> 6.0)
   puma (~> 5.0)
   rails (~> 7.0.5)
+  rails-i18n
+  sassc-rails
   sprockets-rails
   stimulus-rails
   turbo-rails
