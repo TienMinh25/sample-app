@@ -46,6 +46,13 @@ class UsersController < ApplicationController
     end
   end
 
+  # Delete user
+  def destroy
+    User.find_by(id: params[:id]).destroy()
+    flash[:success] = "User deleted"
+    redirect_to(users_path, status: :see_other)
+  end
+
   private
   
   def user_params
@@ -66,13 +73,6 @@ class UsersController < ApplicationController
     if !current_user?(@user) then
       redirect_to(root_url, status: :see_other)
     end
-  end
-
-  # Delete user
-  def destroy
-    User.find_by(id: params[:id]).destroy()
-    flash[:success] = "User deleted"
-    redirect_to(users_path, status: :see_other)
   end
 
   # Confirms an admin user
