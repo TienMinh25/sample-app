@@ -68,6 +68,7 @@ GEM
       tzinfo (~> 2.0)
     autoprefixer-rails (10.4.13.0)
       execjs (~> 2)
+    bcrypt (3.1.19)
     bindex (0.8.1)
     bootsnap (1.16.0)
       msgpack (~> 1.2)
@@ -208,6 +209,7 @@ PLATFORMS
   x86_64-linux
 
 DEPENDENCIES
+  bcrypt (~> 3.1.7)
   bootsnap
   bootstrap-sass
   debug
