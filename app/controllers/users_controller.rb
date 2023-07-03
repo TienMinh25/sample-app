@@ -2,6 +2,7 @@ class UsersController < ApplicationController
   before_action(:logged_in_user, only: [:edit, :update, :index, :destroy])
   before_action(:correct_user, only:[:edit, :update])
   before_action(:admin_user, only:[:destroy])
+
   # show all users
   def index
     @pagy, @users = pagy(User.all(), items: 15)
@@ -44,7 +45,9 @@ class UsersController < ApplicationController
       render('users/edit', status: :unprocessable_entity)
     end
   end
+
   private
+  
   def user_params
     params.require(:user).permit(:name, :email, :password, :password_confirmation)
   end
