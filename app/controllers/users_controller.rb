@@ -13,9 +13,7 @@ class UsersController < ApplicationController
     @user = User.new()
   end
 
-  def show
-    return @user
-  end
+  def show; end
 
   def create
     #relative to strong parameters
