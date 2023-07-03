@@ -31,9 +31,7 @@ class UsersController < ApplicationController
     end
   end
 
-  def edit
-    @user = User.find_by(params[:id])
-  end
+  def edit; end
 
   def update
     if @user.update(user_params())
