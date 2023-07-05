@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  get 'account_activations/edit_account_activation_url'
+
   scope "(:locale)", locale: /en|vi/ do
     root "static_pages#home"
     get '/help', to: 'static_pages#help'
@@ -9,6 +11,6 @@ Rails.application.routes.draw do
     post '/login', to: 'sessions#create'
     delete '/logout', to: 'sessions#destroy'
     resources :users
-
+    resources :account_activations, only: [:edit]
   end
 end
