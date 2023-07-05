@@ -16,22 +16,23 @@ module SessionsHelper
 
   # returns the current logged_in user (if any)
   def current_user
-    if (session[:user_id])
+    if session[:user_id]
       user = User.find_by(id: session[:user_id])
-      if user && session[:session_token] == user.session_token()
+      if user && session[:session_token] == user.session_token
         @current_user = user
       end
-    elsif (cookies.encrypted[:user_id])
+    elsif cookies.encrypted[:user_id]
       user = User.find_by(id: cookies.encrypted[:user_id])
-      if user && user.authenticated?(cookies[:remember_token])
-        log_in(user)
+      if user && user.authenticated?(:remember, cookies[:remember_token])
+        log_in user
         @current_user = user
       end
     end
   end
+  
+  
   # return true if the given user is the current user.
   def current_user?(user)
-    Rails.logger.info "Current_user? returns " + user.id.to_s
     user && user == current_user()
   end
 
@@ -42,14 +43,18 @@ module SessionsHelper
 
   def forget(user)
     user.forget
-    cookies.delete(:user_id)
-    cookies.delete(:remember_token)
+    cookies.delete :user_id
+    cookies.delete :remember_token
+    cookies.delete :user_id
+    cookies.delete :remember_token
   end
 
   # Forgets a persistent session
   def log_out
-    forget(current_user())
-    reset_session()
+    forget current_user()
+    reset_session
+    forget current_user()
+    reset_session
     @current_user = nil
   end
 

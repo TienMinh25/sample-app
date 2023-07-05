@@ -71,3 +71,4 @@ end
 gem "faker"
 
 gem 'pagy', '~> 6.0' # omit patch digit
+
