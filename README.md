@@ -3,7 +3,7 @@
 This document will be description all about my sample-app. 
 Below is my daily to-do list
 
-#### Chapter 3: _Mostly static pages_
+## Chapter 3: _Mostly static pages_
 
 * Create sample-app, below is command line I use
 ```ruby19regexp
@@ -62,7 +62,7 @@ two syntaxes I was learned:
   
 * Setting root route
 
-### Chapter 4: _Rails-Flavored Ruby_
+## Chapter 4: _Rails-Flavored Ruby_
 * Learn about built-in helpers. Some method in below:
     > **link_to**: generate tag <a></a> in html and custom as you like
 
@@ -98,7 +98,7 @@ two syntaxes I was learned:
   >> 2. **`attr_writer`**: it allows to modify data in a field.
   >> 3. **`attr_accessor`**: combination of `attr_writer` and `attr_reader`.
 
-### Chapter 5: *Filling in the Layout*
+## Chapter 5: *Filling in the Layout*
 * Use `bootstrap` framework to built layout
 * #### Bootstrap and custom CSS
 ```rb
@@ -215,15 +215,667 @@ Inside the `custom.scss` use `@import` function to include Bootstrap. Then add s
     | assert_select "a[href=?]", "/" , count: 1  |          \<a href = "/">foo\</a> |
     | assert_select "a[href=?]", "/", text: "foo" |          \<a href = "/">foo\</a> |
 
-### Chapter 6: _Modeling Users_
-### Chapter 7: _Sign Up_
-### Chapter 8: _Basic Login_
-### Chapter 9: _Advanced Login_
-### Chapter 10: _Updating, Showing and Deleting User_
+## Chapter 6: _Modeling Users_
+#### **Modeling Users**
+In Chapter 5, we ended with a stub page for creating new users.
+
+#### User model
+#### Database migration
+Simple `users` table
+
+| id | name  | email                |
+| -- |-------|----------------------|
+| 1  | Minh  | letienminh@gmail.com |
+
+A sketch of `users` data model
+
+| field      | type of data |
+|------------|--------------|
+| id         | integer      |
+| name       | string       |
+| email      | string       |
+| created_at | datetime     |
+| updated_at | datetime     |
+
+Generate a User model
+```bash
+rails generate model User name:string email:string
+```
+Migrate to database
+```bash
+rails db:migrate
+```
+### The model file
+Located at `/app/model/`
+
+Play with *sandbox* console: (when exit, nothing was change)
+```bash
+rails console --sandbox
+```
+```console
+> User.new
+=> #<User id: nil, name: nil, email: nil, created_at: nil,
+updated_at: nil>
+
+> user = User.new(name: "Michael Hartl", email: "michael@example.com")
+=> #<User id: nil, name: "Michael Hartl", email:
+"michael@example.com",
+created_at: nil, updated_at: nil>
+
+> user.valid?
+=> True
+
+> user.save
+(0.1ms) SAVEPOINT active_record_1
+SQL (0.8ms) INSERT INTO "users" ("name", "email", "created_at",
+"updated_at") VALUES (?, ?, ?, ?) [["name", "Michael Hartl"],
+["email", "michael@example.com"], ["created_at", "2022-03-11
+01:51:03.453035"],
+["updated_at", "2022-03-11 01:51:03.453035"]]
+(0.1ms) RELEASE SAVEPOINT active_record_1
+=> true
+
+> user
+=>
+#<User:0x00007f666efee260
+ id: 1,
+ name: "Michael Hartl",
+ email: "michael@example.com",
+ created_at: Mon, 26 Jun 2023 06:48:30.983122000 UTC +00:00,
+ updated_at: Mon, 26 Jun 2023 06:48:30.983122000 UTC +00:00>
+
+> user.name
+=> "Michael Hartl"
+
+> user.email
+=> "michael@example.com"
+
+> user.updated_at
+=> Fri, 11 Mar 2022 01:51:03 UTC +00:00
+```
+It’s often convenient to make and save a model
+in two steps as we have above, but Active Record also lets you combine
+them into one step with `User.create`:
+```console
+> User.create(name: "A Nother", email: "another@example.org")
+=>
+#<User:0x00007f666c453498
+ id: 2,
+ name: "A Nother",
+ email: "another@example.org",
+ created_at: Mon, 26 Jun 2023 06:55:37.444803000 UTC +00:00,
+ updated_at: Mon, 26 Jun 2023 06:55:37.444803000 UTC +00:00>
+```
+### Finding User object
+Play with *sandbox* console
+```console
+> User.find(2)
+=>
+#<User:0x00007f666c435650
+ id: 2,
+ name: "A Nother",
+ email: "another@example.org",
+ created_at: Mon, 26 Jun 2023 06:55:37.444803000 UTC +00:00,
+ updated_at: Mon, 26 Jun 2023 06:55:37.444803000 UTC +00:00>
+ // or use => it is the same
+> User.find_by(id: 2)
+```
+- **_Note:_**
+  `find` method khác `find_by` method ở chỗ, `find` khi không tìm thấy thì sẽ `raise` ra 1 `exception`,
+  còn `find_by` thì trả về `nil`.
+### Updating User object
+```rb
+user.name = "New name"
+user.save()
+
+user.update_attribute(:email, "new@email.com")
+```
+
+## User Validation
+### Validating presence
+Use `validates` method to make an attribute "cannot be empty"
+```rb
+class User < ApplicationRecord
+  validates(:name, presence: true)
+end
+```
+Check error message
+```rb
+user.errors.full_messages
+```
+### Validate length
+Limit the length of an attribute
+```rb
+validates(:email, presence: true, length: { maximum: 255 })
+```
+### Format validation
+Example: `email` need format validation
+```rb
+VALID_EMAIL_REGEX = /\A[\w+\-.]+@[a-z\d\-.]+\.[a-z]+\z/i
+validates(:email, format: { with: VALID_EMAIL_REGEX })
+```
+Break down the `VALID_EMAIL_REGEX`
+| Expression    | Meaning           |
+| ------------- | ----------------- |
+| /             | tart of regex     |
+| \A            | match start of a string   |
+| [\w+\-.]+     | at least one word character, plus, hyphen, or dot |
+| @             | literal "at sign" |
+| [a-z\d\-.]+   | at least one letter, digit, hyphen, or dot    |
+| \.            | literal dot       |
+| [a-z]+        | at least one letter   |
+| \z            | match end of a string |
+| /             | end of regex      |
+| i             | case-insensitive  |
+
+### Uniqueness validation
+To enforce uniqueness of an attribute.
+```rb
+validates(:email, presence: true, length: { maximum: 255 }, format: { with: VALID_EMAIL_REGEX }, uniqueness: true)
+```
+The uniqueness validation is case-sensitive
+```console
+> user = User.create(name: "Example User", email:
+"user@example.com")
+> user.email.upcase
+=> "USER@EXAMPLE.COM"
+> duplicate_user = user.dup
+>duplicate_user.email = user.email.upcase
+> duplicate_user.valid?
+=> true
+```
+Fix
+```rb
+uniqueness: { case_sensitive: false }
+```
+#### Ensuring email uniqueness by downcasing the email attribute
+```rb
+class User < ApplicationRecord
+    before_save { self.email = email.downcase }
+    validates :name, presence: true, length: { maximum: 50 }
+    VALID_EMAIL_REGEX = /\A[\w+\-.]+@[a-z\d\-.]+\.[a-z]+\z/i
+    validates :email, presence: true, length: { maximum: 255 },
+                      format: { with: VALID_EMAIL_REGEX },
+                      uniqueness: true
+end
+```
+
+#### Database indixes
+In the present case, we are adding structure to an existing model, so we
+need to create a migration directly using `migration` generator:
+```bash
+rails generate migration add_index_to_users_email
+```
+In `db/migrate/[timestamp]_add_index_to_users_email.rb`
+```rb
+class AddIndexToUsersEmail < ActiveRecord::Migration[7.0]
+  def change
+    add_index :users, :email, unique: true
+  end
+end
+```
+
+#### Adding a secure password
+#### A hashed password
+`has_secure_password` method.
+
+This one method adds the following functionality:
+- The ability to save a securely hashed `password_digest` attribute to the
+  database
+- A pair of virtual attributes: `password`and `password_confirmation`
+- An `authenticate` method that returns the user when the password is
+  correct
+> Requirement for `has_secure_password`: The corresponding model to have
+> an attribute called `password_digest`.
+
+> `has_secure_password` uses a state-of-the-art hash function called `bcrypt`
+
+#### Minimum password standards
+```rb
+validates :password, presence: true, length: { minimum: 6 }
+```
+#### Create and authenticating User
+```rb
+User.create(name: "Tuslipid", email: "tuslipid@tus.com", password: "tuslipid", password_confirmation: "tuslipid")
+```
+```console
+> user.authenticate("lmao")
+false
+> user.authenticate("correct pw")
+#<User:0x00007f39fbeef020
+ id: 4,
+ name: "Tuslipid",
+ email: "tuslipid@tus.com",
+ created_at: Mon, 26 Jun 2023 08:35:18.469445000 UTC +00:00,
+ updated_at: Mon, 26 Jun 2023 08:35:18.469445000 UTC +00:00,
+ password_digest: "[FILTERED]">
+```
+## Chapter 7: _Sign Up_
+
+#### Showing Users
+### Debug and Rails environment
+```erb
+<%= debug(params) if Rails.env.development? %>
+```
+### A Users resource
+Make a user profile page, following REST architecture.
+
+Get the routing for `/user/1` to work by adding a single line to our routes
+file `config/routes.rb`
+```rb
+resource :users
+```
+**RESTful routes table for Users resource**
+
+| HTTP request method    | URL           | Action    | Named route           |                          Purpose |
+|:-----------------------| ------------- | --------- | --------------------- |---------------------------------:|
+| GET                    | /users        | index     | users_path            |           page to list all users |
+| GET                    | /users/1      | show      | user_path(user)       |                page to show user |
+| GET                    | /users/new    | new       | new_user_path         | page to make a new user (signup) |
+| POST                   | /users        | create    | users_path            |                create a new user 
+| GET                    | /users/1/edit | edit      | edit_user_path(user)  |      page to edit user with id 1 |
+| PATCH (PUT)            | /users/1      | update    | user_path(user)       |                      update user |
+| DELETE                 | /users/1      | destroy   | user_path(user)       |                      delete user |
+
+**Show user in html.erb**
+```rb
+def show
+    @user = User.find_by(params[:id])
+end
+```
+```erb
+<%= @user.name %>, <%= @user.email %>
+```
+### Debugger
+```rb
+def show
+    @user = User.find_by(params[:id])
+    debugger
+end
+```
+The Rails console server shows an `rdbg` prompt
+```console
+(rdbg)
+(rdbg) @user
+(rdbg) @user.name
+```
+
+### A Gravatar Image and a Sidebar
+`Gravatar`: globally recognized avatar - a free service that allows users
+to upload images and associate them with email addresses they control
+
+`gravatar_for`: a custom helper function to return a Gravatar image for a given user.
+```erb
+<!-- app/views/users/show.html.erb -->
+<% provide(:title, @user.name) %>
+<h1>
+    <%= gravatar_for @user %>
+    <%= @user.name %>
+</h1>
+```
+Because `Rails` understands and automatically converts the object to the link in method for link.
+```rb
+# app/helpers/users_helper.rb
+
+def gravatar_for(user)
+    gravatarId = Digest::MD5::hexdigest(user.email.downcase)
+    gravatarUrl = "https://secure.gravatar.com/avatar/#{gravatar_id}"
+    image_tag(gravatarUrl, alt: user.name, class: "gravatar")
+end
+```
+Add a sizebar to the user `show` view
+```erb
+<!-- app/views/users/show.html.erb -->
+<% provide(:title, @user.name) %>
+<div class="row">
+    <aside class="col-md-4">
+        <section class="user_info">
+            <h1>
+                <%= gravatar_for @user %>
+                <%= @user.name %>
+            </h1>
+        </section>
+    </aside>
+</div>
+```
+
+## Signup form
+### Using `form_with`
+```erb
+<%= form_with(model: @user) do |f| %>
+    <%= f.label :name %>
+    <%= f.text_field :name %>
+    
+    <%= f.label :email %>
+    <%= f.email_field :email %>
+    
+    <%= f.label :password %>
+    <%= f.password_field :password %>
+    
+    <%= f.label :password_comfirmation, "Confirmation" %>
+    <%= f.password_field :password_comfirmation %>
+    
+    <%= f.submit "Create my account", class: "btn btn-primary" %>
+<% end %>
+```
+### Get parameters from form
+```rb
+def create
+    @user = User.new(params[:users])
+
+    if @user.save
+      # Handle a successful save
+    else
+      render 'new', status: :unprocessable_entity
+    end
+end
+```
+```rb
+# params[:users]
+"user" => { "name" => "Foo Bar",
+            "email" => "foo@invalid",
+            "password" => "[FILTERED]",
+            "password_confirmation" => "[FILTERED]"
+           }
+```
+### Strong parameters
+Permits some parameters instead of all
+```rb
+params.require(:user).permit(:name, :email, :password, :password_confirmation)
+```
+### Signup error messages
+```rb
+@user.errors.any?
+@user.errors.count
+@user.errors.empty?
+@user.errors.full_messages
+```
+### The finished signup form
+At user `create` action
+```rb
+if @user.save
+    redirect_to @user
+    # or redirect_to user_url(user)
+else
+    ...
+end
+```
+### Flash messages
+In controller
+```rb
+flash[:type] = "Message"
+```
+In html.erb
+```erb
+<% flash.each do |message_type, message| %>
+    <div class="alert alert-<%= message_type %>">
+        <%= message %>
+    </div>
+<% end %>
+```
+## Chapter 8: _Basic Login_
+
+## Sessions
+### Sessions Controller
+```bash
+rails generate controller Sessions new
+```
+Add `/login`, `/logout` routes
+```rb
+get '/login', to: 'sessions#new'
+post '/login', to: 'sessions#create'
+delete '/logout', to: 'sessions#destroy'
+```
+Update appropriate controller's actions and views
+
+```erb
+form_with(url: login_path, scope: :session)
+```
+
+```
+#<ActionController::Parameters
+{"authenticity_token"=>"…",
+"session" =>#<ActionController::Parameters
+            {"email"=>"user@example.com",
+            "password"=>"foobar"} permitted: false>,
+            "commit"=>"Log in",
+            "controller"=>"sessions",
+            "action"=>"create"} permitted: false>
+```
+### Authenticate user
+```rb
+if user && user.authenticate(params[:session][:password])
+    # Handle log in
+else
+    # Return error
+end
+```
+### Add flash message
+We can add
+```rb
+flash[:danger] = 'Invalid email/password combination'
+```
+But it isn't quite right, if we redirect to a different route after getting
+the flash message, it is till there.
+
+Fix this issue by
+```rb
+flash.now[:danger] = 'Invalid email/password combination'
+```
+
+## Logging in
+Include the Sessions helper module into the Application controller
+```rb
+class ApplicationController < ActionController::Base
+    include SessionsHelper
+end
+```
+### `log_in()` method
+```rb
+# app/helpers/session_helper.rb
+def log_in(user)
+    session[:user_id] = user.id
+end
+```
+> Because temporary cookies created using the session method are
+> automatically encrypted, the code is secure.
+### Current user
+We'll define `current_user` method
+
+In `html.erb`
+```erb
+<%= current_user %>
+```
+In controller
+```rb
+redirect_to current_user
+# or
+redirect_to user_path(current_user)
+```
+
+```rb
+# app/helpers/session_helper.rb
+def current_user
+    if session[:user_id]
+        User.find(id: session[:user_id])
+    end
+end
+```
+To prevent hitting the database multiple times
+```rb
+if @current_user.nil?
+    @current_user = User.find(id: session[:user_id])
+else
+    @current_user
+end
+
+or
+
+@current_user = @current_user || User.find(id: session[:user_id])
+
+or
+
+@current_user ||= User.find(id: session[:user_id])
+```
+### Changing layout links
+Add `logged_in` helper function
+```rb
+# app/helpers/session_helper.rb
+def logged_in?
+    !current_user.nil?
+end
+```
+```erb
+<% if logged_in? %>
+    # Links for logged-in users
+<% else %>
+    # Links for non-logged-in-users
+<% end %>
+```
+### Menu toggle
+```bash
+rails importmap:install turbo:install stimulus:install
+```
+
+## Logging out
+```rb
+session.delete(:user_id)
+```
+Better technique
+```rb
+# app/helpers/session_helper.rb
+def log_out
+    reset_session
+    @current_user = nil
+end
+
+# app/controllers/session_controller.rb
+def destroy
+    log_out
+    redirect_to root_url
+end
+```
+## Chapter 9: _Advanced Login_
+
+## Remember me
+### Remember token and digest
+> The previous chapter's session disappears when the users close their browser
+
+We'll take the first step toward persistent sessions by generating a
+*remember token* appropriate for creating permanent cookies using the
+`cookies` method, together with a secure *remember digest* for
+authenticating those tokens.
+
+Plan:
+1. Create a random string as a remember token.
+2. Place the token in the browser cookies.
+3. Save the hash digest of the token to the database.
+4. Place an encrypted version of the user's id in the browser cookies.
+5. When presented with a cookie containing a persistent user id, find the
+   user in the database using the given id, and verify that the remember token
+   cookie matches.
+
+Add the `remember_digest` attribute to the User model
+```bash
+rails generate migrationadd_remmeber_digest_to_users remember_digest:string
+```
+
+In `app/models/user.rb`
+
+Add a method for generating tokens
+```rb
+def self.new_token
+    SecureRandom.urlsafe_base64
+end
+```
+
+Add a digest method to hash the remember token
+
+The password is created using bcrypt (via `has_secure_password`), so we'll
+need to create the fixture password using the same method.
+
+```rb
+def User.digest(string)
+    cost = ActiveModel::SecurePassword.min_cost ?
+      BCrypt::Engine::MIN_COST : BCrypt::Engine.cost
+
+    BCrypt::Password.create(string, cost: cost)
+end
+```
+Add a remember method to remember user to the databse
+```rb
+def remember
+    self.remember_token = User.new_token
+    update_attribute(:remember_digest, User.digest(remember_token))
+end
+```
+### Login with remembering
+Make a persistent session by creating a cookie
+```rb
+cookies[:remember_token] = {
+    value: remember_token,
+    expires: 20.years.from_now.utc
+}
+
+cookies.permanent[:remember_token] = remember_token # Same as above
+```
+Store id to cookie
+```rb
+cookies[:user_id] = user.id
+cookies.encrypted[:user_id] = user.id # better
+cookies.permanent.encrypted[:user_id] = user.id # to be paired with remember token
+```
+We can retrieve user by
+```rb
+User.find_by(id: cookies.encrypted[:user_id])
+```
+To compare the `remember_token` in cookie with the `remember_digest` in
+the databse
+```rb
+BCrypt::Password.new(remember_digest).is_password?(remember_token)
+```
+### Forgetting users
+At User model
+```rb
+update_attribute(:remember_digest, nil)
+```
+Delete cookies
+```rb
+cookies.delete(:user_id)
+cookies.delete(:remember_token)
+```
+### Some checknotes
+- Multiple browsers logged in case: Be careful when users hit log out.
+- `remember_digest` must exist in database to be compared with `remember_token`
+
+## "Remember me" checkbox
+Get value from checkbox form
+```rb
+params[:session][:remember_me]
+```
+- `1`: The box is checked
+- `0`: The box isn't checked
+```rb
+if params[:session][:remember_me] == '1'
+    remember(user)
+else
+    forget(user)
+end
+```
+## Chapter 10: _Updating, Showing and Deleting User_
 * Completed the REST actions for the Users resource(**_edit, update, index, destroy_** actions)
 * Refer to the following table below:
   
   **Restful Route in Rails** (This is the standard)
+  Ứng dụng theo chuẩn `RESTful` sẽ coi web như một `resource`. Về cơ bản sẽ có 7 loại action mà bạn có thể làm với `resource`.
+
+  > GET: index, show, new và edit
+  > 
+  > POST: create
+  >
+  >PUT: update
+  >
+  >DELETE: destroy
 
   | Method    | Action   | URL             | Route(Controller#Action) |                                                   Description |
   |:----------|----------|-----------------|--------------------------|--------------------------------------------------------------:|
@@ -397,9 +1049,312 @@ Inside the `custom.scss` use `@import` function to include Bootstrap. Then add s
 
 * Sử dụng `pagy` gem thay thế cho `will_paginate` gem -> Dùng để hiển thị số lượng người dùng nhất định, giống như hiển thị bài viết nhất định 
   chứ không cần hiển thị cả.
-* **`NOTE`**:
-  > Running `render` `@users` `automatically calls` the `_user.html.erb` `partial`
-  on each user in the `collection`.
+
+## **_Chapter 11: Account Activation_**
+### **_Mailer_**: (Action Mailer Library)
+------------------------------------------------
+  > `Mailers` are structured much like controller actions, with email templates defined as `views`. These
+  templates will include `links` with the `activation token` and `email address`
+  associated with the account to be `activated`.
   >
-  > A `boolean attribute` called `admin` on the `User model` `automatically
-  creates` an `admin? boolean method` on user objects.
+  1. `Mailer Template`:
+    
+     1. We can `generate` a `mailer` using `rails generate`:
+       ```bash
+       rails generate mailer UserMailer account_activation password_reset
+       ```
+        Con viet nua o day
+### **_Query parameter_**
+---------------------------------------------
+* Query parameter, which in a URL appears as a key-value pair located after a question mark.
+    > account_activations/q5lt38hQDc_959PVoo6b7A/edit?
+  email=foo%40example.com
+* **_Note:_**
+    * `@` in the email address appears as `%40`, i.e., it’s “escaped
+      out” to guarantee a valid URL.
+* The way to set a query parameter in Rails is to include a hash in the named route:
+    ```ruby
+      edit_account_activation_url(@user.activation_token, email:@user.email)
+    ```
+* When using `named routes` in this way to define `query parameters`, Rails
+automatically `escapes out` `any special characters`. The resulting email address
+will also be `unescaped automatically` in `the controller`, and will be available
+via `params[:email]`.
+
+### **_Email preview:_**
+-------------------------------------------------------
+In `app/views/user_mailer/account_activation.text.erb`:
+```erbruby
+    Hi <%= @user.name %>,
+    Welcome to the Sample App! Click on the link below to activate your account:
+    <%= edit_account_activation_url(@user.activation_token, email: @user.email) %>
+```
+In `app/views/user_mailer/account_activation.html.erb`:
+```erbruby
+  <h1>Sample App</h1>
+  <p>Hi <%= @user.name %>, </p>
+  <p>
+  Welcome to the Sample App! Click on the link below to activate your account:
+  </p>
+  <%= link_to "Activate", edit_account_activation_url(@user.activation_token, email: @user.email) %>
+```
+* To see result of the templates defined above, we can use `**_email previews_**`
+    * `Email setting` in development: (`config/environments/development.rb`):
+        ```ruby
+            Rails.application.configure do
+            .
+            .
+            .
+            config.action_mailer.raise_delivery_errors = false
+            host = 'example.com' # Don't use this literally; use your local
+            host instead.
+            # Use this on the cloud IDE.
+            config.action_mailer.default_url_options = { host: host,
+            protocol: 'https' }
+            # Use this if developing on localhost.
+            # config.action_mailer.default_url_options = { host: host,
+            protocol: 'http' }
+            .
+            .
+            .
+            end
+        ```
+    * After `restarting` the `development server` to `activate` the `configuration`, we next need to `update` the User mailer `preview file`, which was automatically generated by command line:
+        ```bash
+            rails generate mailer UserMailer account_activation password_reset
+        ```
+      In `test/mailers/previews/user_mailer_preview.rb`:
+        ```ruby
+         # Preview all emails at
+        http://localhost:3000/rails/mailers/user_mailer
+        class UserMailerPreview < ActionMailer::Preview
+        # Preview this email at
+        #
+        http://localhost:3000/rails/mailers/user_mailer/account_activation
+            def account_activation
+                user = User.first
+                user.activation_token = User.new_token
+                UserMailer.account_activation(user)
+            end
+        # Preview this email at
+        # http://localhost:3000/rails/mailers/user_mailer/password_reset
+            def password_reset
+                UserMailer.password_reset
+            end
+        end
+       ``` 
+      
+# Account activation
+
+Strategy:
+1. Start users in an "unactivated" state.
+2. When a user signs up, generate an activation token and corresponding activation
+digest
+3. Save the activation digest to the database, and then send an email to the user with
+a link containing the activation token and user's email address.
+4. When the user clicks the link, find the user by email address, and then authenticate
+the token by comparing with the activation digest.
+5. If the user is authenticated, change the status from "unactivated" to "activated"
+
+Analogy between login, remembering, account activation, pw reset:
+| Method                | find_by   | String            | Digest            | Authentication        |
+| --------------------- | --------- | -------------     | -------------     | --------------------- |
+| login                 | email     | password          | password_digest   | authenticate (pw)     |
+| remember me           | id        | remember_token    | remember_digest   | authenticated?(:remember, token)      |
+| account activation    | email     | activation_token  | activation_digest | authenticated?(:activation, token)    |
+| password reset        | email     | reset_token       | reset_digest      | authenticated?(:reset, token) |
+
+## Account Activations Resource
+### Account Activations controller
+```bash
+rails generate controller AccountActivations
+```
+Adding a route for the Account Activations `edit` action
+```rb
+resources :account_activations, only: [:edit]
+```
+### Account Activations data model
+We need a unique activation token for use in the activation email.
+```rb
+user.activation_token
+```
+Authenticate the user with code like
+```rb
+user.authenticated?(:activation, token)
+```
+Add a boolean attribute `activated` to the model, which will allow us to test if an
+user is activated
+```rb
+if user.activated?
+```
+The model finally looks like:
+|                   |           |
+| ----------------- | --------- |
+| id                | integer   |
+| name              | string    |
+| email             | string    |
+| created_at        | datetime  |
+| updated_at        | datetime  |
+| password_digest   | string    |
+| remember_digest   | string    |
+| admin             | string    |
+| activation_digest | string    |
+| activated         | boolean   |
+| activated_at      | datetime  |
+
+```bash
+rails generate migration add_activation_to_users \
+> activation_digest:string activated:boolean activated_at:datetime
+```
+### Activation token callback
+```rb
+before_create :create_activation_digest
+.
+.
+.
+def create_activation_digest
+    self.activation_token = User.new_token
+    self.activation_digest = User.digest(activation_token)
+end
+```
+
+## Account activation emails
+```bash
+rails generate mailer UserMailer account_activation password_reset
+```
+URL pattern
+```rb
+edit_account_activation_url(@user.activation_token, @user.email)
+```
+```
+http://www.example.com/account_activations/q5lt38hQDc_959PVoo6b7A/edit?email = foo%40example.com
+```
+Update mailer views
+```erb
+<!-- app/views/user_mailer/account_activation.text.erb -->
+Hi <%= @user.name %>,
+Welcome to the Sample App! Click on the link below to activate your
+account:
+<%= edit_account_activation_url(@user.activation_token, email:
+@user.email) %>
+
+<!-- app/views/user_mailer/account_activation.html.erb -->
+<h1>Sample App</h1>
+
+<p>Hi <%= @user.name %>, </p>
+
+<p>
+  Welcome to the Sample App! Click on the link below to activate your
+  account:
+</p>
+
+<%= link_to "Activate",
+  edit_account_activation_url(@user.activation_token,
+  email: @user.email) %>
+```
+### Preview email
+```rb
+# config/environments/development.rb
+Rails.applcation.configure do
+    .
+    .
+    .
+    config.action_mailer.raise_delivery_errors = false
+
+    localhost = 'domain.com' # In local development, use localhost:3000 instead
+    # Use this on the cloud IDE.
+    config.action_mailer.default_url_options = { host: localhost, protocol: 'https' }
+    # Use this if developing on localhost.
+    # config.action_mailer.default_url_options = { host: host, protocol: 'http' }
+    .
+    .
+    .
+end
+```
+```rb
+# test/mailers/previews/user_mailer_preview.rb
+def account_activation
+  user = User.first
+  user.activation_token = User.new_token
+  UserMailer.account_activation(user)
+end
+```
+### Update the Users `create` action
+```rb
+def create
+  if @user.save
+    UserMailer.account_activation(@user).deliver_now
+    flash[:info] = "Please check your email to activate your account"
+    redirect_to root_url
+  else
+    ...
+```
+
+## Activating the account
+### Generalizing the `authenticated?` method
+```rb
+user = User.find_by(email: params[:email])
+if user && user.authenticated?(:activation, params[:id])
+```
+```rb
+def authenticated?(attribute, token)
+  digest = self.send("{attribute}_digest")
+  return false if digest.nil?
+  BCrypt::Password.new(digest).is_password?(token)
+end
+```
+### Activation `edit` action
+```rb
+if user && !user.activated? && user.authenticated?(:activation, params[:id])
+```
+If the user is authenticated according to the booleans above, we need to activate the
+user and update the `activted_at` timestamp.
+```rb
+user.update_attribute(:activated, true)
+user.update_attribute(:activated, Time.zone.now)
+```
+Show only mail-activated user
+
+
+# app/controllers/users_controller.rb
+
+
+
+
+## **_Some additional knowledge:_**
+## 1. What is different between `flash.now` and `flash`:
+
+    > `flash`: `redirection`, for the `next request`
+    > 
+    >`flash.now`: `render template only`, for the `same request`
+
+
+## 2. Với web nói chung thì session vs cookie là gì? 
+## Cơ chế làm việc khi browser giao tiếp với server?
+## Trong rails cookie vs cookie.encrypted khác nhau như nào? Trường hợp áp dụng?
+Trong rails có những cơ chế lưu trữ session nào? Mặc định là gì?
+- Với web nói chung thì `sesson` và `cookie` là dùng để lưu trữ dữ liệu.
+- Cơ chế làm việc của browser giao tiếp với server là: (giả sử trong trường hợp đã đăng nhập và được cấp token)
+    > Browser sẽ gửi http **`request`** lên cho server, server xác thực qua token được gửi cùng với http header, sau đó server sẽ dựa theo request và đi theo **`router`**, sẽ cho biết chuyển đến **`controller`** nào và **`action`** gì, sau đó **`server`** đựa vào đó để xử lí và trả lại **`response`** cho browser.
+
+    
+* Trong Rails `cookie` sẽ trả ra dữ liệu nguyên gốc cho trước khi gửi cho browser, còn `cookie.encrypted` thì mã hóa dữ liệu trước khi gửi đi. Trường hợp áp dụng cho `cookie` là wesite đó không cần đăng nhập hay không cần authenticate, là 1 trang web mở và mọi người đều có thể truy cập. Còn `cookie.encrypted` thường dùng cho mục đích ngăn không cho người dùng đọc được thông tin và nâng cao tính bảo mật.
+
+* Trong Rails có 3 cơ chế lưu trữ session: `CookieStore`, `ActiveRecord`, `RedisStore`. Mặc định sẽ dùng `CookieStore` để lưu trữ `session data`.
+
+* Sự khác biệt giữa 3 cơ chế:
+ > Với cơ chế **`CookieStore`**, thì toàn bộ **`session data`** và **`session id`** sẽ được lưu trữ trong **`cookie`** ở phía client. Do đó server không phải lưu trữ bất kì thông tin nào liên quan đến session và chỉ cần đọc từ **`cookie`** do client gửi kèm theo mỗi request.
+
+ > Với cơ chế **`ActiveRecord`** thì sẽ lưu trữ **`Session ID`** ở cookie, còn dữ liệu về **`session data`** thì được lưu trữ ở database.
+
+ > Với cơ chế **`RedisStore`** thì cũng gần giống với cơ chế **`ActiveRecord`**, tuy nhiên **`session data`** được lưu trữ ở database thì sẽ sử dụng 1 cơ sở dữ liệu có dạng key-value, có điểm mạnh là tốc độ đọc và ghi.
+
+ ## 3. Different between resource and resources
+
+ _**Resource**_
+- `resource`: chỉ tạo ra 6 action là `new`, `edit`, `show`, `update`, `destroy`, `create`.
+- Trong đường dẫn của resource thì không có `:id`, ví dụ: `user/edit/`, vì resource thì được hiểu là 1 tài nguyên, nên chỉ cần 1 đường dẫn như vậy là được.
+
+_**Resources**_
+- `resources`: tạo ra 7 action tiêu chuẩn theo RESTful, là `index`, `new`, `edit`, `show`, `create`, `update`, `destroy`.
+- Trong đường dẫn của resources thì có thể có `:id` để lấy `id` người dùng, ví dụ: `users/:id/edit`, vì resources được hiểu là nhiều tài nguyên, vì vậy mà cần có `:id` để query data.

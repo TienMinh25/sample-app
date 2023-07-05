@@ -1,29 +1,28 @@
 class UsersController < ApplicationController
-  before_action :find_user_by_id, only: [:show, :edit, :correct_user, :update]
-  before_action :logged_in_user, only: [:edit, :update, :index, :destroy]
-  before_action :correct_user, only:[:edit, :update]
-  before_action :admin_user, only:[:destroy]
-  
+  before_action(:logged_in_user, only: [:edit, :update, :index, :destroy])
+  before_action(:correct_user, only:[:edit, :update])
+  before_action(:admin_user, only:[:destroy])
   # show all users
   def index
-    @pagy, @users = pagy User.all, items: 15
+    @pagy, @users = pagy User.activated_users, items: 15
   end
 
   def new
     @user = User.new
   end
 
-  def show; end
+  def show
+    redirect_to root_url && return unless @user.activated == true
+  end
 
   def create
     #relative to strong parameters
     @user = User.new(user_params)
     if @user.save
       #handle a successful save
-      reset_session
-      log_in @user
-      flash[:success] = "Welcome to the Sample App!"
-      redirect_to user_url(@user)
+      @user.send_activation_email
+      flash[:info] = "Please check your email to activate your account."
+      redirect_to root_url
     else
       render 'new', {status: :unprocessable_entity}
     end
@@ -32,7 +31,7 @@ class UsersController < ApplicationController
   def edit; end
 
   def update
-    if @user.update(user_params())
+    if @user.update(user_params)
       # Handle a successful update.
       flash[:success] = "Profile updated"
       redirect_to user_url(@user)
@@ -50,7 +49,7 @@ class UsersController < ApplicationController
   end
 
   private
-  
+
   def user_params
     params.require(:user).permit(:name, :email, :password, :password_confirmation)
   end
