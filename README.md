@@ -1316,12 +1316,151 @@ user.update_attribute(:activated, Time.zone.now)
 Show only mail-activated user
 
 
-# app/controllers/users_controller.rb
+### app/controllers/users_controller.rb
 
 
 
+# Chapter 12: Password reset
 
-## **_Some additional knowledge:_**
+## Password Resets Controller
+- Generate controller `PasswordResets` 
+```bash
+  rails generate controller PasswordResets new edit --no-test-framework
+```
+- Adding a link `forgot_password` in `app/views/sessions/new.html.erb`:
+```erb
+  <% provide(:title, t("sessions.login")) %>
+  <h1><%= t("sessions.login") %></h1>
+
+<div class="row">
+  <div class="col-md-6 col-md-offset-3">
+    <%= form_with(url: login_path, scope: :session) do |f|%>
+      <%= f.label(:email) %>
+      <%= f.email_field(:email, class: 'form-control') %>
+
+      <%= f.label(:password) %>
+      <%= link_to("forgot password", new_password_reset_path)%>
+      <%= f.password_field(:password, class: 'form-control') %>
+
+      <%= f.label(:remember_me, class: "checkbox inline") do %>
+        <%= f.check_box(:remember_me) %>
+        <span>Remember me on this computer</span>
+      <%end %>
+
+      <%= f.submit("Log in", class: 'btn btn-primary') %>
+    <%end %>
+    <p>New User ? <%= link_to("Sign up now!", signup_path) %></p>
+  </div>
+</div>
+```
+- Adding a resource for password resets, in `config/routes.rb`:
+```ruby
+  Rails.application.routes.draw do
+      scope "(:locale)", locale: /en|vi/ do
+        root "static_pages#home"
+        get '/help', to: 'static_pages#help'
+        get '/about', to: 'static_pages#about'
+        get '/contact', to: 'static_pages#contact'
+        get '/signup', to: 'users#new'
+        get '/login', to: 'sessions#new'
+        post '/login', to: 'sessions#create'
+        delete '/logout', to: 'sessions#destroy'
+        get 'account_activations/edit_account_activation_url'
+        resources :users
+        resources :account_activations, only: [:edit]
+
+        resources :password_resets, only: [:new, :create, :edit, :update]
+    end
+  end
+```
+
+RESTful routes provided by the Password Resets resource:
+---------------------------------------------------
+| HTTP request method | URL | Action | Named route|
+|:--------------------|-----|--------|-----------:|
+|GET|/password_resets/new|new|new_password_reset_path|
+|POST|/password_resets|create|password_resets_path|
+|GET|/password_rests/token/edit|edit|edit_password_reset_url(token)|
+|PATCH|/password_resets/token|update|password_reset_path(token)|
+
+* In here, use `edit_password_reset_url(token)` instead of the `_path` form because we want to use it for gmail.
+
+## New Password Resets
+
+* The User model with added `password reset` attributes
+
+    |Users  |Type   |
+    |:----  |------:|
+    |id     |integer| 
+    |name|string|
+    |email|string|
+    |created_at|datetime|
+    |updated_at|datetime|
+    |password_digest|string|
+    |remember_digest|string|
+    |admin|boolean|
+    |activation_digest|string|
+    |activated|boolean|
+    |activated_at|datetime|
+    |reset_digest|string|
+    |reset_sent_at|datime|
+
+* The `migration` to add attributes above:
+```bash
+  rails generate migration add_reset_to_users reset_digiest:string reset_sent_at:datetime
+```
+* And execute it to update database:
+```bash
+  rails db:migrate
+```
+
+* A new password reset view, in `app/views/password_resets/new.html.erb
+```erb
+<% provide(:title, "Forgot password")%>
+<h1>Forgot password</h1>
+
+<div class="row">
+    <div class="col-md-6 col-md-offset-3">
+        <%= form_with(url: password_resets_path, scope: :password_reset) do |f| %>
+            <%= f.label(:email)%>
+            <%= f.email_field(:email, class: "form-control")%>
+
+            <%= f.submit("Submit", class: "btn btn-primary")%>
+        <% end %>
+    </div>
+</div>
+
+```
+
+## Resetting the Password
+- The form to reset a password (`app/views/password_resets/edit.html.erb`)
+```erb
+  <% provide(:title, 'Reset password') %>
+<h1>Reset password</h1>
+
+<div class="row">
+    <div class="col-md-6 col-md-offset-3">
+        <%= form_with(model: @user, url: password_reset_path(params[:id])) do |f| %>
+            <%= render 'shared/error_messages' %>
+
+            <%= hidden_field_tag :email, @user.email %>
+
+            <%= f.label :password %>
+            <%= f.password_field :password, class: 'form-control' %>
+
+            <%= f.label :password_confirmation, "Confirmation" %>
+            <%= f.password_field :password_confirmation, class: 'form-control' %>
+            
+            <%= f.submit "Update password", class: "btn btn-primary" %>
+        <% end %>
+    </div>
+</div>
+```
+# Conf nua
+
+
+
+# **_Some additional knowledge:_**
 ## 1. What is different between `flash.now` and `flash`:
 
     > `flash`: `redirection`, for the `next request`
@@ -1358,3 +1497,54 @@ Trong rails có những cơ chế lưu trữ session nào? Mặc định là gì
 _**Resources**_
 - `resources`: tạo ra 7 action tiêu chuẩn theo RESTful, là `index`, `new`, `edit`, `show`, `create`, `update`, `destroy`.
 - Trong đường dẫn của resources thì có thể có `:id` để lấy `id` người dùng, ví dụ: `users/:id/edit`, vì resources được hiểu là nhiều tài nguyên, vì vậy mà cần có `:id` để query data.
+
+_**Cơ chế hoạt động của turbo-method ở đây là gì, tại sao lại logout được?**_
+```erb
+   <%= link_to("Log out", logout_path, data: {"turbo-method": :delete}) %>
+```
+
+* Cơ chế của `turbo-method` ở đây là sẽ do browser khi gửi request chỉ hỗ trợ 2 phương thức POST và GET, vậy nên `turbo-method` ở đây sẽ là sửa đổi lại phương thức `POST` thành `DELETE` để `server` có thể xử lí theo method `delete` và theo `action` `destroy`.
+
+## 4. So sánh sự khác nhau giữa update, update_columns, update_column, update_attribute, update_attributes trong rails
+- Ngoài `update_columns` còn có các method khác là `update`, `update_attributes`, `update_attribute`, update_column`.
+- So sánh:
+   - `update(id, attributes):`
+         - Là 1 `public method` gọi trực tiếp từ `model class`. Có `2 tham số `truyền vào là `id` và `1 hash` các `attributes`. Hàm này `update` các `attributes` của `record chứa id` tương ứng.
+
+       
+         # Ví dụ:
+         User.update(1, {name: "Le Van Tien Minh", email: "abc@gmail.com"})
+   
+
+  - `update_attributes(attributes):`
+         - Hàm này được gọi từ 1 `object` của `model class`. Hàm này thực hiện `update` tất cả các `attributes` được 
+         truyền vào từ params của 1 object nếu `pass validate`.
+       
+         # Ví dụ:
+         user = User.find_by id:1
+         user.update_attributes name: "Canh", email: "abc@gmail.com"
+      
+  - `update_attribute(name, value):`
+         - Hàm này được gọi từ 1 `object` của `model class`. Hàm này chỉ có thể `update` 1 `attribute` của `object` đó.
+
+         Tuy nhiên hàm này có 1 số lưu ý sau:
+
+          - Trường được `update` sẽ bỏ qua `validate`.
+          - Callback vẫn chạy
+          - `updated_at` vẫn được cập nhật
+  - `update_columns(attributes):`
+         - Hàm này tương tự như `update_attributes` method, tuy nhiên hàm này `update` trực tiếp vào DB. Và:
+
+          - Bỏ qua validate
+          - Callback không được thực thi
+          - `updated_at` không được cập nhật
+  - `update_column(name, value):`
+         - Hàm này được gọi từ 1 `object` của model class, nó cũng `update` trực tiếp vào DB. Tuy nhiên hàm này có 
+         1 số lưu ý sau:  
+
+          - Bỏ qua validate
+          - Bỏ qua callback
+          - Gọi cập nhật `updated_at`
+ 
+Ngoài ra, còn có hàm `update!(id, attributes)` và `update_attributes!(attributes)`, nhưng chỉ khác nhau khi trả về, các hàm này sẽ `raise  exception` nếu không `update` thành công, còn hàm `update` và `update_attributes` sẽ trả về false nếu không `update` thành công.
+ 
