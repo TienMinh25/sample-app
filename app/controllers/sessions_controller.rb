@@ -3,7 +3,6 @@ class SessionsController < ApplicationController
 
   def create
     user = User.find_by email: params[:session][:email].downcase
-    user = User.find_by email: params[:session][:email].downcase
     if user && user.authenticate(params[:session][:password])
       if user.activated?
         forwarding_url = session[:forwarding_url]
@@ -25,10 +24,8 @@ class SessionsController < ApplicationController
 
   def destroy
     log_out if logged_in?
-    log_out if logged_in?
     # status code see_other <=> 303 HTTP -> lay tai nguyen cua URI khac
     # redirect_to dung de chuyen huong
-    redirect_to root_path, status: :see_other
     redirect_to root_path, status: :see_other
   end
 

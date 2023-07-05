@@ -45,14 +45,10 @@ module SessionsHelper
     user.forget
     cookies.delete :user_id
     cookies.delete :remember_token
-    cookies.delete :user_id
-    cookies.delete :remember_token
   end
 
   # Forgets a persistent session
   def log_out
-    forget current_user()
-    reset_session
     forget current_user()
     reset_session
     @current_user = nil
