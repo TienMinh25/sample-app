@@ -72,3 +72,5 @@ gem "faker"
 
 gem 'pagy', '~> 6.0' # omit patch digit
 
+gem "active_storage_validations"
+gem "image_processing"

@@ -8,4 +8,14 @@
       </h1>
     </section>
   </aside>
+  <div class="col_md-8">
+    <% if @user.microposts.any? %>
+      <% # Method count dem truc tiep tren database voi given user_id = @user.id %>
+      <h3>Microposts (<%= @user.microposts.count %>)</h3>
+      <ol>
+        <%= render @microposts %>
+      </ol>
+      <%== pagy_nav(@pagy)%>
+    <% end %>
+  </div>
 </div>
