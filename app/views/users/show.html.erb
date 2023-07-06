@@ -7,8 +7,12 @@
         <%= @user.name %>
       </h1>
     </section>
+    <section class="stats">
+      <%= render 'shared/stats' %>
+    </section>
   </aside>
   <div class="col_md-8">
+    <%= render 'follow_form' if logged_in? %>
     <% if @user.microposts.any? %>
       <% # Method count dem truc tiep tren database voi given user_id = @user.id %>
       <h3>Microposts (<%= @user.microposts.count %>)</h3>

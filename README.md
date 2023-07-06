@@ -1766,3 +1766,4 @@ The command line in below:
 rails db:migrate:reset
 rails db:seed
 ```
+
