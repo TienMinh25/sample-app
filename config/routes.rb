@@ -1,5 +1,4 @@
 Rails.application.routes.draw do
-  get 'account_activations/edit_account_activation_url'
 
   scope "(:locale)", locale: /en|vi/ do
     root "static_pages#home"
@@ -14,5 +13,7 @@ Rails.application.routes.draw do
     resources :users
     resources :account_activations, only: [:edit]
     resources :password_resets, only: [:new, :create, :edit, :update]
+    resources :microposts, only: [:create, :destroy]
+    get '/microposts', to: 'static_pages#home'
   end
 end

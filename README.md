@@ -1458,6 +1458,156 @@ RESTful routes provided by the Password Resets resource:
 ```
 # Conf nua
 
+# Chapter 13: User Microposts
+
+## The Basic Model Microposts
+
+|Microposts|Type    |
+|:---------|-------:|
+| id       |integer |
+|content   |text    |
+|user_id   |integer |
+|created_at|datetime|
+|updated_at|datetime|
+
+### Generating the Micropost model
+```bash
+rails generate model Micropost content:text user:references
+```
+=> Code in file `db/migrate/[timestamp]_create_microposts.rb`
+```rb
+class CreateMircoposts < ActiveRecord::Migration[7.0]
+  def change
+    create_table :mircoposts do |t|
+      t.text :content
+      t.references :user, null: false, foreign_key: true
+
+      t.timestamps
+    end
+  end
+end
+```
+
+### The Micropost migration with added index.
+```rb
+class CreateMicroposts < ActiveRecord::Migration[7.0]
+  def change
+    create_table :microposts do |t|
+      t.text :content
+      t.references :user, null: false, foreign_key: true
+      t.timestamps
+    end
+    add_index :microposts, [:user_id, :created_at]
+  end
+end
+```
+
+### Micropost Validations
+In `app/model/microposts.rb`
+```rb
+class Micropost < ApplicationRecord
+  belongs_to :user
+  validates :user_id, presence: true
+  validates :content, presence: true, length: { maximum: 140 }
+end
+```
+### User/Microposts Associations
+We use 
+> user.microposts.create
+>
+> user.microposts.create!
+>
+> user.microposts.build
+
+instead of
+
+> Micropost.create
+>
+> Micropost.create!
+>
+> Micropost.new
+
+Table in below is a summary of `user/micropost` association methods
+|Method|Purpose |
+|:-----|-------:|
+|micropost.user|returns the User object associated with the micropost|
+|user.microposts|returns a collection of the user's microposts|
+|user.microposts.create(arg)|creates a micropost associated with `user`
+|user.microposts.create!(arg)|creates a micropost associated with `user` (exception on failure)
+|user.microposts.build|returns a new Micropost object associated with `user`|
+|user.microposts.find_by(id: 1)|finds the micropost with id `1` and `user_id` equal to user.id|
+
+To have associated between `microposts` and `users`, we need to added `belongs_to :user` in `app/models/microposts.rb`(was generated), after that, we added `has_many :microposts` in `app/models/user.rb`:
+```rb
+class User < ApplicationRecord
+  has_many :microposts
+  .
+  .
+  .
+  .
+  .
+end
+``` 
+
+## Micropost Refinements
+
+### Associations
+### **1. Why Associations?**
+* In `Rails`, an `association` is a connection between two `Active Record models`. 
+* For instance, consider a simple Rails application that includes a model for authors and a model for books. Each author can have many books. Without associations, the model declarations would look like this:
+  ```rb
+  class Author < ApplicationRecord
+  end
+
+  class Book < ApplicationRecord
+  end
+  ```
+  Now, suppose we wanted to add a new book for an existing author. We'd need to do something like this:
+  ```rb
+  @book = Book.create(created_at: Time.zone.now, author_id: @author.id)
+  ```
+  Or when we wanted to delete an author, and ensured that all of its books got deleted as well:
+  ```rb
+  @books = Book.where(author_id: @author.id)
+  @books.each do |book|
+    book.destroy
+  end
+  @author.destroy
+  ```
+
+  And now, with Active Record associations, we can streamline these - and other - operations by declaratively telling Rails that there is a connection between the two models :D that's much easy!!!
+  ```rb
+  class Author < ApplicationRecord
+    has_many :books, dependent: :destroy
+  end
+
+  class Book < ApplicationRecord
+    belongs_to :author
+  end
+  ``` 
+  With this change, creating a new book for a particular author is easier:
+  ```rb
+  @book = @author.books.create(created_at: Time.zone.now)
+  ```
+  Deleting an author and all of its books is _much_ easier:
+  ```rb
+  @author.destroy
+  ```
+
+  Now we see :)) it's very easy when use `association` in `Rails`.
+
+### **2.Types of Associations:**
+`Rails` supports six types of associations:
+- `belongs_to`
+- `has_one`
+- `has_many`
+- `has_many :through`
+- `has_one :through`
+- `has_and_belongs_to_many`
+
+
+
+
 
 
 # **_Some additional knowledge:_**
@@ -1548,3 +1698,71 @@ _**Cơ chế hoạt động của turbo-method ở đây là gì, tại sao lạ
  
 Ngoài ra, còn có hàm `update!(id, attributes)` và `update_attributes!(attributes)`, nhưng chỉ khác nhau khi trả về, các hàm này sẽ `raise  exception` nếu không `update` thành công, còn hàm `update` và `update_attributes` sẽ trả về false nếu không `update` thành công.
  
+## 5. Filters vs Callbacks in Rails
+* **Filters**: Filters are methods that are run before, after or "around" a **_controller_** action.
+
+  * **_before_action_**: Before filters are run on requests before the request gets to the controller’s action 
+  * **_ater_action_**: After filters are run after action completes
+  * **_around_action_**: Around filters may have logic before and after the action being run. `Can use around filters` for `exception handling`, `setup and teardown`, and a myriad of other cases.
+
+* **Callbacks**: Callbacks allow you to trigger logic before or after an alteration of an object's state in _model_.
+
+It is possible to write code that will run whenever an `Active Record` object is `created`, `saved`, `updated`, `deleted`, `validated`, or `loaded` from the `database`.
+
+**Creating an Object**
+> before_validation
+> 
+> after_validation
+>
+> before_save
+> 
+> around_save
+>
+> before_create
+>
+> around_create
+>
+> after_create
+> 
+> after_save
+>
+> after_commit/after_rollback
+
+**Updating an Object**
+> before_validation
+>
+> after_validation
+>
+> before_save
+>
+> around_save
+>
+> before_update
+>
+> around_update
+> 
+> after_update
+>
+> after_save
+>
+> after_commit/after_rollback
+
+**Destroying an Object**
+> before_destroy
+>
+> around_destroy
+>
+> after_destroy
+>
+> after_commit/after_rollback
+
+## Scope in Rails (must be figure out)
+
+
+
+## Reset databse and reseed the database:
+The command line in below:
+```bash
+rails db:migrate:reset
+rails db:seed
+```

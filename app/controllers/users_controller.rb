@@ -15,6 +15,7 @@ class UsersController < ApplicationController
 
   def show
     redirect_to root_url && return unless @user.activated == true
+    @pagy, @microposts = pagy @user.microposts, items: 15
   end
 
   def create
@@ -54,14 +55,6 @@ class UsersController < ApplicationController
 
   def user_params
     params.require(:user).permit(:name, :email, :password, :password_confirmation)
-  end
-
-  def logged_in_user
-    unless logged_in?
-      store_location
-      flash[:danger] = "Please log in."
-      redirect_to login_url, status: :see_other
-    end
   end
 
   # Confirms the correct user

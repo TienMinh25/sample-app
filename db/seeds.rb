@@ -23,3 +23,12 @@ User.create!(name: "Example User",
                password: password,
                password_confirmation: password)
 end
+
+# Generate microposts for a subset of users.
+#method order to get users followed time's created_at
+users = User.order(:created_at).take(6)
+
+50.times do
+  content = Faker::Lorem.sentence(word_count: 5)
+  users.each { |user| user.microposts.create!(content: content)}
+end
